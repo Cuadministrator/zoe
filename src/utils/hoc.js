@@ -37,6 +37,7 @@ const mergeParams = obj => {
 
 const RouteContext = React.createContext()
 
+// 高阶组件HOC
 const helperPageHOC = Component => class PageHOCWrapper extends React.Component {
   static navigationOptions ({ navigation }) {
     const { params } = navigation.state
@@ -53,7 +54,6 @@ const helperPageHOC = Component => class PageHOCWrapper extends React.Component 
     const navigator = {}
   
     navigator.Linking = Linking
-    navigator.test = text => alert(text)
 
     navigator.goBack = () => {
       navigation.goBack(null)
@@ -70,8 +70,8 @@ const helperPageHOC = Component => class PageHOCWrapper extends React.Component 
     navigator.params = navigation.state.params || {}
 
     // 为了和后续可能的web端统一
-    let routeName = routeConfig[navigation.state.routeName].path
-    let searchObj = {...navigation.state.params}
+    let routeName = routeConfig[navigation.state.routeName].path // path: xxx/xxx/:xxx
+    let searchObj = {...navigation.state.params} // 全部参数 { params, queryParams }
     let routeNameList = routeName.split(':')
     if (routeNameList.length > 1) {
       for (let i = 1; i < routeNameList.length; i++) {

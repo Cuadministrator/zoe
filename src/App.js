@@ -1,12 +1,4 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   View
 } from 'react-native';
@@ -20,6 +12,7 @@ import { Provider } from 'mobx-react/native'
 import { store } from './store'
 
 class App extends React.Component {
+  initData = () => {}
   render () {
     const Router = createAppContainer(createNavigator(routeConfig))
     return (

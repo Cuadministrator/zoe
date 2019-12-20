@@ -13,6 +13,7 @@
     "@babel/plugin-proposal-decorators": "^7.7.0",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/plugin-transform-runtime": "^7.6.2",
+    "dayjs": "^1.8.17",
     "mobx": "4.3.1",
     "mobx-react": "5.2.8",
     "qs": "6.9.0",

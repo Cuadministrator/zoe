@@ -21,7 +21,7 @@ const routeConfig = {
   }
 }
 
-// 约定str格式为：a/b?c=1&d=2
+// 约定路由字符串str格式为：a/b?c=1&d=2
 // /a/b?c=1&d=2
 const routeString2RouteObj = str => {
   if (!str) return null
@@ -94,7 +94,7 @@ const route2RouteString = obj => {
     const key = routeConfigKeys[i]
     const routeItem = routeConfig[key]
     const routePath = routeItem['path']
-    // 进入递归寻找下一个routeConfig中的item
+    // 进入递归寻找下一个 routeConfig 中的 item
     if (name !== key) return recursionRoute(routeConfigKeys, i + 1)
 
     const allParams = { ...queryParams, ...params }

@@ -53,7 +53,8 @@ const createNavigator = (config) => {
         headerLeft: <RightBack
           onPress={
             () => { navigation.goBack(null) }
-          } />,
+          }
+        />,
         headerTitleStyle: {
           fontSize: rem(18),
           color: '#333',
@@ -64,7 +65,13 @@ const createNavigator = (config) => {
       })
     }
   )
-  return AppNavigator
+  return class extends React.Component {
+    render () {
+      return (
+        <AppNavigator ref={navigatorRef => { NavigationService.setTopLevelNavigator(navigatorRef)}}></AppNavigator>
+      )
+    }
+  }
 }
 
 export default createNavigator
