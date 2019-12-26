@@ -55,8 +55,12 @@ const helperPageHOC = Component => class PageHOCWrapper extends React.Component 
   
     navigator.Linking = Linking
 
-    navigator.goBack = () => {
-      navigation.goBack(null)
+    navigator.goBack = (n) => {
+      if (n) {
+        navigation.pop(n)
+      } else {
+        navigation.goBack(null)
+      }
     }
     navigator.replace = obj => {
       navigation.replace(obj.name, mergeParams(obj))

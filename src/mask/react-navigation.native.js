@@ -56,8 +56,34 @@ function reset (index, routeName, params) {
   })) 
 }
 
-function pop (index) {
+function pop (index = 1) {
   _navigator && _navigator.dispatch(StackActions.pop({
-    index
+    n: index
   }))
+}
+
+function getNavigation () {
+  let curNavigation = null
+  try {
+    const { nav } = _navigator.state
+    const routes = nav.routes
+    curNavigation = routes[routes.length - 1]
+  } catch (e) {
+    console.warn('当前路由异常')
+  }
+  return curNavigation
+}
+
+export default {
+  NavigationActions,
+  StackActions,
+  setTopLevelNavigator,
+  navigate,
+  back,
+  setParams,
+  replace,
+  push,
+  reset,
+  pop,
+  getNavigation
 }

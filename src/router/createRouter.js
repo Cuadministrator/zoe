@@ -1,7 +1,7 @@
 import React from 'react'
-import { View, Text, TouchableOpacity } from 'react-native'
-import { createAppContainer } from 'react-navigation'
+import { TouchableOpacity } from 'react-native'
 import { createStackNavigator } from 'react-navigation-stack'
+import NavigationService from '../mask/react-navigation.native'
 import { rem } from '../utils/func'
 
 const RightBack = props => {
@@ -42,19 +42,18 @@ const createNavigator = (config) => {
   const AppNavigator = createStackNavigator(
     routerObj,
     {
-      defaultNavigationOptions: { title: 'defaultPage' },
       navigationOptions: ({ scene, previous, navigation }) => ({
         headerStyle: {
           backgroundColor: '#fff',
           height: 44,
           elevation: 0 // 移除安卓环境下的阴影
         },
-        headerTitleAlign: 'center',
         headerLeft: <RightBack
           onPress={
             () => { navigation.goBack(null) }
           }
         />,
+        headerTitleAlign: 'center',
         headerTitleStyle: {
           fontSize: rem(18),
           color: '#333',
