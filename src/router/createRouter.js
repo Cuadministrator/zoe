@@ -64,13 +64,15 @@ const createNavigator = (config) => {
       })
     }
   )
-  return class extends React.Component {
-    render () {
-      return (
-        <AppNavigator ref={navigatorRef => { NavigationService.setTopLevelNavigator(navigatorRef)}}></AppNavigator>
-      )
-    }
-  }
+
+  return AppNavigator
+  // return class extends React.Component {
+  //   render () {
+  //     return (
+  //       <AppNavigator ref={navigatorRef => { NavigationService.setTopLevelNavigator(navigatorRef)}}></AppNavigator>
+  //     )
+  //   }
+  // }
 }
 
 export default createNavigator
