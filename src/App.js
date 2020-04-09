@@ -1,30 +1,22 @@
-import React from 'react';
-import {
-  View
-} from 'react-native';
+import React from 'react'
+import { NavigationContainer } from '@react-navigation/native'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 
-// router
-import { createAppContainer } from 'react-navigation'
-import createNavigator from './router/createRouter'
-import { routeConfig } from './router/routeConfig'
-// mobx
-import { Provider } from 'mobx-react/native'
-import { store } from './store'
+// 配置
+import { navigationRef } from './route/NavigationService'
 
-class App extends React.Component {
-  initData = () => {}
-  render () {
-    const Router = createAppContainer(createNavigator(routeConfig))
-    return (
-      <Provider {...store}>
-        <View style={{flex: 1, backgroundColor: '#F9FAFF'}}>
-          <Router />
-          {/* <Loading /> */}
-          {/* <Confirm /> */}
-        </View>
-      </Provider>
-    )
-  }
+// route
+import Route from './route'
+
+const App = () => {
+  return (
+    <SafeAreaProvider>
+      <NavigationContainer
+        ref={navigationRef}>
+        <Route />
+      </NavigationContainer>
+    </SafeAreaProvider>
+  )
 }
 
 export default App

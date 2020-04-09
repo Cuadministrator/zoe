@@ -1,0 +1,5 @@
+export const HomeScreen = 'HomeScreen'
+export const ScheduleScreen = 'ScheduleScreen'
+export const ScheduleListScreen = 'ScheduleListScreen'
+export const ScheduleDetailScreen = 'ScheduleDetailScreen'
+export const MineScreen = 'MineScreen'
