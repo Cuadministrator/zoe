@@ -8,8 +8,10 @@ import { navigationRef } from './NavigationService'
 
 // screen
 import HomeScreen from '../pages/home'
-import ScheduleListScreen from '../pages/schedule/list'
-import ScheduleDetailScreen from '../pages/schedule/detail'
+// import ScheduleListScreen from '../pages/schedule/list'
+// import ScheduleDetailScreen from '../pages/schedule/detail'
+import ScheduleStopWatchScreen from '../pages/schedule/watch'
+import ScheduleHomeScreen from '../pages/schedule'
 
 import BottomTabNavigator from '../route/BottomTabNavigator'
 
@@ -23,9 +25,9 @@ const Router = () => {
         headerShown: false
       }}>
       <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
+      {/* <Stack.Screen name="ScheduleHomeScreen" component={ScheduleHomeScreen} /> */}
       <Stack.Screen name="HomeScreen" component={HomeScreen} />
-      <Stack.Screen name="ScheduleListScreen" component={ScheduleListScreen} />
-      <Stack.Screen name="ScheduleDetailScreen" component={ScheduleDetailScreen} />
+      <Stack.Screen name="ScheduleStopWatchScreen" component={ScheduleStopWatchScreen} />
     </Stack.Navigator>
   )
 }

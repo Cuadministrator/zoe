@@ -2,25 +2,55 @@ import React, { useState, useRef, useCallback } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 
 // components
-import { Icon } from '../../../components'
-import { SwipeRow } from '../../../components'
-import SortableList from 'react-native-sortable-list'
+import { Button } from 'beeshell'
+import { SwipeRow, SortableList, Icon } from '../../../components'
+
+// utils
+import { usePanResponder } from '../../../utils/hooks'
 
 const Item = ({
-  data: { finished, label },
-  disabled
+  id,
+  index,
+  data,
+  onLeftAction,
+  onRightDelete,
+  onRightEdit,
+  onRightAdd,
+  disabled,
+  ...resetProps
 }) => {
+  if (!data) return null
+  const { finished, label } = data
+  const _onLeftAction = useCallback(() => {
+    onLeftAction && typeof onLeftAction === 'function' && onLeftAction(id, data)
+  }, [id])
+
+  const _onRightDelete = useCallback(() => {
+    onRightDelete && typeof onRightDelete === 'function' && onRightDelete(id, data)
+  }, [id])
+
   return (
     <SwipeRow
-      rightOpenValue={-50}
-      leftActivationValue={20}
-      onLeftAction={() => console.warn(1)}
+      rightOpenValue={-150}
+      // leftActivationValue={20}
+      onLeftAction={_onLeftAction}
       style={styles.swipeRow}
+      textStyle={styles.swipeRowText}
+      {...resetProps}
     >
       <View style={styles.hiddenRow}>
-        <View style={{backgroundColor: '#7f70d8', height: '100%', width: 50, alignItems: 'center', justifyContent: 'center'}}>
-          <Text style={{color: '#fff'}}>删除</Text>
-        </View>
+        <Button
+          type="danger"
+          size="sm"
+          onPress={_onRightDelete}
+          style={styles.swipeRowBtn}
+        >删除</Button>
+        <Button
+          type="warning"
+          size="sm"
+          onPress={onRightEdit}
+          style={styles.swipeRowBtn}
+        >编辑</Button>
       </View>
       <View style={styles.visibleRow}>
         <Icon
@@ -40,15 +70,46 @@ const Item = ({
 
 const List = ({
   data: defaultData,
-  values
+  style,
+  onChange
 }) => {
   const [data, setData] = useState(defaultData)
+  const [value, setValue] = useState(0)
+
+  const _delete = (id, item) => {
+    const newData = {...data}
+    delete newData[id]
+    setData(newData)
+  }
+
+  const _edit = () => {}
+
+  const _add = () => {}
+
+  const _finished = (id, item) => {
+    const newData = {...data}
+    if (newData[id]) {
+      newData[id].finished = !newData[id].finished
+      setData(newData)
+    }
+  }
 
   return (
     <SortableList
+      style={style}
       data={data}
+      scrollEnabled
       manuallyActivateRows
-      renderRow={Item}
+      renderRow={
+        props =>
+        <Item
+          onRightAdd={_add}
+          onRightEdit={_edit}
+          onRightDelete={_delete}
+          onLeftAction={_finished}
+          {...props}
+        />
+      }
       style={styles.sortableList}
       contentContainerStyle={styles.sortableListContainer}
     />
@@ -83,7 +144,7 @@ const styles = StyleSheet.create({
   },
   visibleRow: {
     width: '100%',
-    height: 40,
+    height: 48,
     paddingHorizontal: 12,
     flexDirection: 'row',
     alignItems: 'center',
@@ -91,12 +152,24 @@ const styles = StyleSheet.create({
   },
   hiddenRow: {
     width: '100%',
-    height: 40,
+    height: 48,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
     backgroundColor: '#fff'
   },
+  swipeRowBtn: {
+    width: 50,
+    height: '100%',
+    paddingHorizontal: 10,
+    borderWidth: 0,
+    borderRadius: 0
+  },
+  swipeRowText: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: '500'
+  }
 })
 
 export default List
