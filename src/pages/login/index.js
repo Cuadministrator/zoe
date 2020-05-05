@@ -19,8 +19,6 @@ import { Icon } from '../../components'
 // utils
 import { getStatusBarHeight } from '../../utils/func'
 
-// service
-
 const { height: W_HEIGHT } = Dimensions.get('window')
 
 const LoginInput = (props) => {
@@ -46,11 +44,13 @@ class LoginPage extends Component {
   }
 
   async componentDidMount () {
+    // 监控键盘，如果键盘遮挡登陆框，登陆框上浮
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow.bind(this))
     this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide.bind(this))
   }
 
   componentWillUnmount () {
+    // 取消监控
     this.keyboardDidShowListener && this.keyboardDidShowListener.remove()
     this.keyboardDidHideListener && this.keyboardDidHideListener.remove()
   }
@@ -60,6 +60,7 @@ class LoginPage extends Component {
     this.setState({pswMode: pswMode === 'password' ? 'none' : 'password'})
   }
 
+  // 点击登陆按钮
   onPressLogin = async () => {
     const { globalStore, navigation } = this.props
     const { account, psw } = this.state
@@ -74,7 +75,7 @@ class LoginPage extends Component {
       })
     }
   }
-
+  // 登陆框上浮
   _keyboardDidShow(e) {
     // 只有第一次才改变
     if (this.state.keyBoardHeight !== 0) return
@@ -82,7 +83,7 @@ class LoginPage extends Component {
       keyBoardHeight: e.endCoordinates.height
     })
   }
-
+  // 隐藏上浮
   _keyboardDidHide() {
     this.setState({
       keyBoardHeight: 0

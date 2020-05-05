@@ -2,116 +2,19 @@ import React, { useState, useEffect } from 'react'
 import { View, Text, ScrollView, StyleSheet, FlatList } from 'react-native'
 
 // components
-import { SafeAreaView, useSafeArea } from 'react-native-safe-area-context'
-import List from '../home/components/listItem'
+import { useSafeArea } from 'react-native-safe-area-context'
 import { Icon } from '../../components'
-import storage from '../../storage'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
-const treeData = [
-  {
-    id: 1,
-    image: 'https://placekitten.com/200/240',
-    label: 'Chloe',
-    finished: true,
-  },
-  {
-    id: 2,
-    image: 'https://placekitten.com/200/201',
-    label: 'Jasper',
-    finished: true,
-  },
-  {
-    id: 3,
-    image: 'https://placekitten.com/200/202',
-    label: 'Pepper',
-    finished: true,
-  },
-  {
-    id: 4,
-    image: 'https://placekitten.com/200/203',
-    label: 'Oscar',
-    finished: false,
-  },
-  {
-    id: 5,
-    image: 'https://placekitten.com/200/204',
-    label: 'Dusty',
-    finished: false,
-  },
-  {
-    id: 6,
-    image: 'https://placekitten.com/200/205',
-    label: 'Spooky',
-    finished: false,
-  },
-  {
-    id: 7,
-    image: 'https://placekitten.com/200/210',
-    label: 'Kiki',
-    finished: false,
-  },
-  {
-    id: 8,
-    image: 'https://placekitten.com/200/215',
-    label: 'Smokey',
-    finished: false,
-  },
-  {
-    id: 9,
-    image: 'https://placekitten.com/200/220',
-    label: 'Gizmo',
-    finished: true,
-  },
-  {
-    id: 10,
-    image: 'https://placekitten.com/220/239',
-    label: 'Kitty1',
-    finished: false,
-  },
-  {
-    id: 11,
-    image: 'https://placekitten.com/220/239',
-    label: 'Kitty2',
-    finished: false,
-  },
-  {
-    id: 12,
-    image: 'https://placekitten.com/220/239',
-    label: 'Kitty3',
-    finished: false,
-  },
-  {
-    id: 13,
-    image: 'https://placekitten.com/220/239',
-    label: 'Kitty4',
-    finished: false,
-  },
-  {
-    id: 14,
-    image: 'https://placekitten.com/220/239',
-    label: 'Kitty5',
-    finished: false,
-  },
-  {
-    id: 15,
-    image: 'https://placekitten.com/220/239',
-    label: 'Kitty6',
-    finished: false,
-  },
-  {
-    id: 16,
-    image: 'https://placekitten.com/220/239',
-    label: 'Kitty7',
-    finished: false,
-  },
-]
+// utils
+import storage from '../../storage'
 
 const QuadrantList = ({
   data,
   navigation,
   initData
 }) => {
+  // 跳转任务完成页
   const onQuadrantItemPress = () => {
     navigation.push('ScheduleStopWatchScreen', { refresh: initData })
   }
@@ -149,11 +52,13 @@ const QuadrantScreen = ({
   navigation
 }) => {
   const safeArea = useSafeArea()
+  // 各个象限的数据存储
   const [importUrgent, setImportUrgent] = useState([])
   const [importNotUrgent, setImportNotUrgent] = useState([])
   const [notImportUrgent, setNotImportUrgent] = useState([])
   const [notImportNotUrgent, setNotImportNotUrgent] = useState([])
 
+  // 初始化数据
   useEffect(() => {
     initData()
   }, [])
@@ -171,18 +76,19 @@ const QuadrantScreen = ({
           label: resItem.name,
           finished: resItem.status === 2
         }
-        if (resItem.status !== 3) {
-          if (resItem.taskType === 1) {
+        if (resItem.status !== 3) { // 非失效任务
+          if (resItem.taskType === 1) { // 一象限
             iu.push(resItem)
-          } else if (resItem.taskType === 2) {
+          } else if (resItem.taskType === 2) { // 二象限
             inu.push(resItem)
-          } else if (resItem.taskType === 3) {
+          } else if (resItem.taskType === 3) { // 三象限
             niu.push(resItem)
-          } else if (resItem.taskType === 4) {
+          } else if (resItem.taskType === 4) { // 四象限
             nInu.push(resItem)
           }
         }
       })
+      // 设置数据
       setImportUrgent(iu)
       setImportNotUrgent(inu)
       setNotImportUrgent(niu)

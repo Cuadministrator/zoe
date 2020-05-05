@@ -3,7 +3,9 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native'
 
 // components
 import { Button } from 'beeshell'
+// 左右滑动组件
 import { SwipeRow, Icon } from '../../../components'
+// 拖动组件
 import { AutoDragSortableView } from 'react-native-drag-sort'
 
 const { width:screenWidth } = Dimensions.get('window')
@@ -39,6 +41,7 @@ const Item = ({
     <View
       style={styles.swipeRow}
     >
+      {/* 手势左右滑动 */}
       <SwipeRow
         style={{flex: 1}}
         leftActivationValue={50}
@@ -48,6 +51,7 @@ const Item = ({
         textStyle={styles.swipeRowText}
         {...resetProps}
       >
+        {/* 隐藏块 */}
         <View style={styles.hiddenRow}>
           <Button
             size="sm"
@@ -72,6 +76,7 @@ const Item = ({
             />
           </Button>
         </View>
+        {/* 显示块 */}
         <View style={styles.visibleRow}>
           <Icon
             name={finished ? 'check-square' : 'square'}
@@ -85,6 +90,7 @@ const Item = ({
             ]}>{label}</Text>
         </View>
       </SwipeRow>
+      {/* 拖动块 */}
       <View style={styles.swipeRowRightView}>
         <Icon
           name='align-justify'
@@ -103,18 +109,22 @@ const List = ({
   onItemComplete,
   onDataChange,
 }) => {
+  // 删除
   const _delete = (id, index) => {
     onItemDelete && typeof onItemDelete === 'function' && onItemDelete(id, index)
   }
 
+  // 修改
   const _edit = (id, index) => {
     onItemEdit && typeof onItemEdit === 'function' && onItemEdit(id, index)
   }
 
+  // 完成
   const _finished = (id, index) => {
     onItemComplete && typeof onItemComplete === 'function' && onItemComplete(id, index)
   }
 
+  // 排序
   const _onDataChange = nextData => {
     onDataChange && typeof onDataChange === 'function' && onDataChange(nextData)
   }

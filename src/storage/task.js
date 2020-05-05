@@ -1,4 +1,4 @@
-import storage from './index'
+import storage from './index' // https://github.com/jasonmerino/react-native-simple-store/blob/master/docs/index.md
 import dayjs from 'dayjs'
 
 const STORAGE_KEY = 'taskList'
@@ -8,7 +8,9 @@ export const getTaskList = async ({userId}) => {
   const taskRes = await storage.get(STORAGE_KEY)
   if (taskRes && taskRes.length > 0) {
     taskRes.forEach(taskItem => {
+      // 过滤失效项
       if (taskItem.status !== 3) {
+        // 过滤非用户项
         if (taskItem.userId === userId || !userId) {
           result.push(taskItem)
         }
@@ -23,6 +25,7 @@ export const addTask = async (params) => {
   const keyProps = Object.keys(params)
   const taskProps = ['name', 'taskType', 'repeatType', 'tags', 'dateTime']
   const taskUserProps = ['name', 'taskType', 'repeatType', 'tags', 'dateTime', 'userId']
+  // 数据校验
   if (
     !(
       [...new Set([...keyProps, ...taskProps])].length === taskProps.length ||
@@ -35,8 +38,8 @@ export const addTask = async (params) => {
     createDate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
     status: 1
   }
+  // 添加数据
   const res = await storage.push(STORAGE_KEY, taskParams)
-  console.warn('addTask', res)
   return true
 }
 
@@ -46,6 +49,7 @@ export const editTask = async ({id, ...resetProps}) => {
     let taskIndex = taskRes.findIndex(taskItem => taskItem.id === id)
     const keyProps = Object.keys(resetProps)
     const taskProps = ['name', 'taskType', 'repeatType', 'tags', 'dateTime']
+    // 数据校验
     if (
       !(
         [...new Set([...keyProps, ...taskProps])].length === taskProps.length &&
@@ -60,7 +64,8 @@ export const editTask = async ({id, ...resetProps}) => {
       tags: resetProps['tags'],
       dateTime: resetProps['dateTime']
     }
-    await storage.set(STORAGE_KEY, taskRes)
+    // 数据存储
+    await storage.save(STORAGE_KEY, taskRes)
     return true
   }
   return false
@@ -71,12 +76,12 @@ export const completeTask = async ({id}) => {
   if (taskRes && taskRes.length > 0) {
     let taskIndex = taskRes.findIndex(taskItem => taskItem.id === id)
     if (taskIndex >= 0) {
-      console.warn('status', taskRes[taskIndex].status)
+      // 修改数据状态
       taskRes[taskIndex] = {
         ...taskRes[taskIndex],
         status: taskRes[taskIndex].status === 2 ? 1 : 2
       }
-      await storage.set(STORAGE_KEY, taskRes)
+      await storage.save(STORAGE_KEY, taskRes)
       return true
     }
   }
@@ -92,7 +97,7 @@ export const deleteTask = async ({id}) => {
         ...taskRes[taskIndex],
         status: 3
       }
-      await storage.set(STORAGE_KEY, taskRes)
+      await storage.save(STORAGE_KEY, taskRes)
       return true
     }
   }
