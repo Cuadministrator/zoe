@@ -50,17 +50,27 @@ const Item = ({
       >
         <View style={styles.hiddenRow}>
           <Button
-            type="danger"
             size="sm"
             onPress={_onRightDelete}
             style={styles.swipeRowBtn}
-          >删除</Button>
+          >
+            <Icon
+              name='trash-2'
+              size={16}
+              color='#222'
+            />
+          </Button>
           <Button
-            type="warning"
             size="sm"
             onPress={_onRightEdit}
             style={styles.swipeRowBtn}
-          >编辑</Button>
+          >
+            <Icon
+              name='edit'
+              size={16}
+              color='#222'
+            />
+          </Button>
         </View>
         <View style={styles.visibleRow}>
           <Icon
@@ -87,20 +97,14 @@ const Item = ({
 }
 
 const List = ({
-  data: defaultData,
-  onItemComplete,
+  data,
   onItemEdit,
+  onItemDelete,
+  onItemComplete,
+  onDataChange,
 }) => {
-  const [data, setData] = useState(defaultData)
-
-  useEffect(() => {
-    setData(defaultData)
-  }, [defaultData])
-
   const _delete = (id, index) => {
-    const newData = [...data]
-    newData.splice(index, 1)
-    setData(newData)
+    onItemDelete && typeof onItemDelete === 'function' && onItemDelete(id, index)
   }
 
   const _edit = (id, index) => {
@@ -108,12 +112,11 @@ const List = ({
   }
 
   const _finished = (id, index) => {
-    const newData = [...data]
-    if (newData[index]) {
-      newData[index].finished = !newData[index].finished
-      setData(newData)
-      onItemComplete && typeof onItemComplete === 'function' && onItemComplete(id, index)
-    }
+    onItemComplete && typeof onItemComplete === 'function' && onItemComplete(id, index)
+  }
+
+  const _onDataChange = nextData => {
+    onDataChange && typeof onDataChange === 'function' && onDataChange(nextData)
   }
 
   if (!(data && data.length > 0)) return null
@@ -129,11 +132,7 @@ const List = ({
       marginChildrenLeft = {10}
       marginChildrenTop={10}
       childrenHeight={childrenHeight}
-      onDataChange={(value)=>{
-        if (value.length != data.length) {
-          setData(value)
-        }
-      }}
+      onDataChange={_onDataChange}
       renderItem={(item,index)=>{
         return (
           <Item
@@ -197,7 +196,8 @@ const styles = StyleSheet.create({
     height: '100%',
     paddingHorizontal: 10,
     borderWidth: 0,
-    borderRadius: 0
+    borderRadius: 0,
+    backgroundColor: '#f5f7fa',
   },
   swipeRowText: {
     fontSize: 16,

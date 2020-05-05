@@ -6,26 +6,16 @@ import storage from '../storage'
 // components
 import { Tip } from 'beeshell'
 
-// 不允许在动作外部修改状态
-configure({
-  enforceActions: true
-})
-
 class Global {
   @observable user = null
 
   @action
   changeUser (value) {
-    if (value) {
-      user = value
-    }
+    this.user = value
   }
 
   @action
-  login = async ({
-    account,
-    password
-  }) => {
+  async login ({ account, password }) {
     const usersRes = await storage.get('userList')
     if (usersRes && usersRes.length > 0) {
       const user = usersRes.find(item => item.phone === account && item.password === password)
