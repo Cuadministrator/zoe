@@ -24,15 +24,7 @@ import { getStatusBarHeight } from '../../utils/func'
 const { height: W_HEIGHT } = Dimensions.get('window')
 
 const LoginInput = (props) => {
-  const showPswMode = props && props.pswMode === 'password'
   const [pswMode, setPswMode] = useState(props && props.pswMode)
-  const onPswModePress = () => {
-    setPswMode(pswMode === 'password' ? 'none' : 'password')
-  }
-  const onClearInput = () => {
-    const { onChangeText } = props
-    onChangeText && typeof onChangeText === 'function' && onChangeText('')
-  }
   return <Input
     autoCapitalize='none'
     secureTextEntry={pswMode === 'password'}
@@ -76,7 +68,6 @@ class LoginPage extends Component {
       account, password: psw
     })
     if(globalStore.user) {
-      // navigation.reset('BottomTabNavigator')
       navigation.reset({
         index: 0,
         routes: [{ name: 'BottomTabNavigator' }],

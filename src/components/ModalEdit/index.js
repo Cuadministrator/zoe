@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native'
 import Dayjs from 'dayjs'
 
@@ -15,6 +15,7 @@ import {
   taskTypeEnum,
   repeatTypeEnum
 } from '../../common/config'
+import { editTask } from '../../storage/task'
 
 const formDefaultData = {
   name: '',
@@ -85,7 +86,7 @@ const TaskItem = ({
         textAlign='left'
         value={inputValue}
         placeholder='请输入任务名称'
-        onChange={setInputValue}
+        onChange={value => _onChange('name', value)}
       />
       <View
         style={[
@@ -161,10 +162,11 @@ const TaskItem = ({
 }
 
 const ModalEdit = ({
-  data,
+  defaultData,
   visible,
   editable = false,
-  onConfirm,
+  onModalEdit,
+  onModalAdd,
   onClose
 }) => {
   const refModal = useRef(null)
@@ -173,11 +175,11 @@ const ModalEdit = ({
   const [tagInputVisible, setTagInputVisible] = useState(true)
   const [formData, setFormData] = useState(
     {
-      name: editable ? data.name : formDefaultData.name,
-      date: editable ? Dayjs(data.dateTime).format('YYYY-MM-DD') : formDefaultData.date,
-      time: editable ? Dayjs(data.dateTime).format('HH:mm:ss') : formDefaultData.time,
-      repeatType: editable ? data.repeatType : formDefaultData.repeatType,
-      tags: editable ? data.tags : formDefaultData.tags
+      name: editable ? defaultData.name : formDefaultData.name,
+      date: editable ? Dayjs(defaultData.dateTime).format('YYYY-MM-DD') : formDefaultData.date,
+      time: editable ? Dayjs(defaultData.dateTime).format('HH:mm:ss') : formDefaultData.time,
+      repeatType: editable ? defaultData.repeatType : formDefaultData.repeatType,
+      tags: editable ? defaultData.tags : formDefaultData.tags
     }
   )
 
@@ -224,8 +226,18 @@ const ModalEdit = ({
   }
 
   const _onConfirm = async () => {
-    // 需要打接口添加数据 TODO:
-    onConfirm && typeof onConfirm === 'function' && onConfirm(formData)
+    const { date, time, ...resetProps } = formData
+    const params = {
+      taskType: important,
+      dateTime: Dayjs(`${date} ${time}`).format('YYYY-MM-DD HH:mm:ss'),
+      ...resetProps
+    }
+    if (editable) {
+      params.id = defaultData.id,
+      onModalEdit && typeof onModalEdit === 'function' && onModalEdit(params)
+    } else {
+      onModalAdd && typeof onModalAdd === 'function' && onModalAdd(params)
+    }
   }
 
   const importantItem = taskTypeEnum.find(item => item.id === important)
@@ -279,6 +291,7 @@ const ModalEdit = ({
               date={formData.date}
               time={formData.time}
               repeat={formData.repeatType}
+              onChange={onFormDataChange}
             />
             <View>
               <View style={styles.row}>

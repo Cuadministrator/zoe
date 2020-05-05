@@ -44,15 +44,6 @@ const TabScreens = [
       tabBarIcon: 'git-merge'
     }
   },
-  // {
-  //   name: 'Mine',
-  //   component: MineScreen,
-  //   options: {
-  //     type: 'funcBar',
-  //     tabBarLabel: '我',
-  //     tabBarIcon: 'shuffle'
-  //   }
-  // },
   {
     name: 'ScheduleList',
     component: TestScreen,
@@ -62,15 +53,6 @@ const TabScreens = [
       tabBarIcon: 'list'
     }
   },
-  // {
-  //   name: 'ScheduleAdd',
-  //   component: ScheduleListScreen,
-  //   options: {
-  //     type: 'scheduleAdd',
-  //     tabBarLabel: '时刻列表',
-  //     tabBarIcon: 'list'
-  //   }
-  // },
 ]
 
 const Tab = createBottomTabNavigator()
@@ -79,7 +61,7 @@ const MyTabBar = ({
   state,
   descriptors,
   navigation,
-  activeTintColor = 'red',
+  activeTintColor = '#F6BB42',
   inactiveTintColor = '#999'
 }) => {
   const safeArea = useSafeArea()
@@ -190,15 +172,6 @@ const MyTabBar = ({
             return (
               <TouchableOpacity
                 key={`route_${index}`}
-                style={[
-                  // styles.tabItemView,
-                  // (index + 1) % 2 === 0 && { right: 0 },
-                  // index <= 1 ? { top: 0 } : { bottom: 0 }
-                  // {
-                  //   bottom: 80 * Math.sin(Math.PI / 180 * 90 / (routeLength - 1) * index),
-                  //   right: 80 * Math.cos(Math.PI / 180 * 90 / (routeLength - 1) * index)
-                  // }
-                ]}
                 onPress={onPress}
                 onLongPress={onLongPress}>
                   <Icon
@@ -215,20 +188,12 @@ const MyTabBar = ({
         }
         <TouchableOpacity
           style={[
-            // styles.tabItemView,
-            // { bottom: 0, right: 0 }
           ]}
           onPress={() => setShowMenu(!showMenu)}
-          // onLongPress={onLongPress}
         >
             <Icon
               name={showMenu ? 'maximize-2' : 'minimize-2'}
               color='#999'
-              // color={
-              //   isFocused
-              //     ? activeTintColor
-              //     : inactiveTintColor
-              // }
               size={32} />
         </TouchableOpacity>
       </View>
@@ -243,8 +208,8 @@ const BottomTabNavigator = () => {
         props => <MyTabBar {...props} />
       }
       tabBarOptions={{
-        activeTintColor: '#0074d9',
-        inactiveTintColor: '#999'
+        activeTintColor: '#434a54',
+        inactiveTintColor: '#e6e9ed'
       }}
     >
       {
@@ -252,13 +217,6 @@ const BottomTabNavigator = () => {
         TabScreens.map((tsItem, tsIndex) =>
           <Tab.Screen
             key={`tsItem_${tsIndex}`}
-            // options={
-            //   {
-            //     style: {
-            //       paddingBottom: 400
-            //     }
-            //   }
-            // }
             {...tsItem}
           />
         )
