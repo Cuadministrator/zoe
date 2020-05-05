@@ -1,49 +1,45 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useRef, useCallback } from 'react'
 import { View, Text, StyleSheet, Dimensions } from 'react-native'
 
 // components
 import { Button } from 'beeshell'
-import { SwipeRow, Icon } from '../../../components'
+import { SwipeRow, SortableList, Icon } from '../../../components'
 import { AutoDragSortableView } from 'react-native-drag-sort'
 
 const { width:screenWidth } = Dimensions.get('window')
-const parentWidth = screenWidth
-const childrenWidth = screenWidth - 20
+const parentWidth = (screenWidth - 10) / 2
+const childrenWidth = screenWidth - 10
 const childrenHeight = 48
 
 const Item = ({
   id,
   index,
-  label,
-  finished,
+  data,
   onLeftAction,
   onRightDelete,
   onRightEdit,
+  onRightAdd,
   disabled,
   ...resetProps
 }) => {
+  if (!data) return null
+  const { finished, label } = data
   const _onLeftAction = useCallback(() => {
-    onLeftAction && typeof onLeftAction === 'function' && onLeftAction(id, index)
-  }, [id, index])
+    console.warn('id', id)
+    onLeftAction && typeof onLeftAction === 'function' && onLeftAction(id, data)
+  }, [id])
 
   const _onRightDelete = useCallback(() => {
-    onRightDelete && typeof onRightDelete === 'function' && onRightDelete(id, index)
-  }, [id, index])
+    onRightDelete && typeof onRightDelete === 'function' && onRightDelete(id, data)
+  }, [id])
 
-  const _onRightEdit = useCallback(() => {
-    onRightEdit && typeof onRightEdit === 'function' && onRightEdit(id, index)
-  }, [id, index])
-
-  if (!id) return null
   return (
     <View
       style={styles.swipeRow}
     >
       <SwipeRow
         style={{flex: 1}}
-        leftActivationValue={50}
         rightOpenValue={-150}
-        swipeToClosePercent={1}
         onLeftAction={_onLeftAction}
         textStyle={styles.swipeRowText}
         {...resetProps}
@@ -58,7 +54,7 @@ const Item = ({
           <Button
             type="warning"
             size="sm"
-            onPress={_onRightEdit}
+            onPress={onRightEdit}
             style={styles.swipeRowBtn}
           >编辑</Button>
         </View>
@@ -88,31 +84,28 @@ const Item = ({
 
 const List = ({
   data: defaultData,
-  onItemComplete,
-  onItemEdit,
+  style,
+  onChange
 }) => {
   const [data, setData] = useState(defaultData)
+  const [value, setValue] = useState(0)
 
-  useEffect(() => {
-    setData(defaultData)
-  }, [defaultData])
-
-  const _delete = (id, index) => {
-    const newData = [...data]
-    newData.splice(index, 1)
+  const _delete = (id, item) => {
+    const newData = {...data}
+    delete newData[id]
     setData(newData)
   }
 
-  const _edit = (id, index) => {
-    onItemEdit && typeof onItemEdit === 'function' && onItemEdit(id, index)
-  }
+  const _edit = () => {}
 
-  const _finished = (id, index) => {
-    const newData = [...data]
-    if (newData[index]) {
-      newData[index].finished = !newData[index].finished
+  const _add = () => {}
+
+  const _finished = (id, item) => {
+    console.warn(id)
+    const newData = {...data}
+    if (newData[id]) {
+      newData[id].finished = !newData[id].finished
       setData(newData)
-      onItemComplete && typeof onItemComplete === 'function' && onItemComplete(id, index)
     }
   }
 
@@ -137,16 +130,37 @@ const List = ({
       renderItem={(item,index)=>{
         return (
           <Item
-            index={index}
+            onRightAdd={_add}
             onRightEdit={_edit}
             onRightDelete={_delete}
             onLeftAction={_finished}
-            {...item}
+            data={item}
           />
         )
       }}
     />
   )
+
+  // return (
+  //   <SortableList
+  //     style={style}
+  //     data={data}
+  //     scrollEnabled
+  //     manuallyActivateRows
+  //     renderRow={
+  //       props =>
+  //       <Item
+  //         onRightAdd={_add}
+  //         onRightEdit={_edit}
+  //         onRightDelete={_delete}
+  //         onLeftAction={_finished}
+  //         {...props}
+  //       />
+  //     }
+  //     style={styles.sortableList}
+  //     contentContainerStyle={styles.sortableListContainer}
+  //   />
+  // )
 }
 
 List.Item = Item

@@ -16,14 +16,13 @@ import {
   repeatTypeEnum
 } from '../../common/config'
 
-const data = [
-  {name: '小花', date: '2020-12-12', time: '20:59:00', repeat: 1},
-  {name: '小华', date: '2020-12-13', time: '19:59:23', repeat: 1},
-  {name: '小唐', date: '2020-12-14', time: '18:59:12', repeat: 2},
-  {name: '小姐', date: '2020-12-15', time: '17:59:11', repeat: 3},
-  {name: '笑笑', date: '2020-12-16', time: '16:59:22', repeat: 2},
-  {name: '大丁', date: '2020-12-17', time: '15:59:33', repeat: 1}
-]
+const formDefaultData = {
+  name: '',
+  date: Dayjs().format('YYYY-MM-DD'),
+  time: Dayjs().format('HH:mm:ss'),
+  repeatType: repeatTypeEnum[0].id,
+  tags: ['工作', '生活', '开会', '上课', '旅行']
+}
 
 const TaskItem = ({
   name: nameValue,
@@ -36,14 +35,13 @@ const TaskItem = ({
   const [inputValue, setInputValue] = useState(nameValue || '')
   const [date, setDate] = useState(dateValue || Dayjs().format('YYYY-MM-DD'))
   const [time, setTime] = useState(timeValue || Dayjs().format('HH:mm:ss'))
-  const [repeat, setRepeat] = useState(repeatTypeEnum.find(item => item.value === repeatValue) || repeatTypeEnum[0])
+  const [repeat, setRepeat] = useState(repeatTypeEnum.find(item => item.id === repeatValue) || repeatTypeEnum[0])
   // edit
   const [dateVisible, setDateVisible] = useState(false)
   const [timeVisible, setTimeVisible] = useState(false)
   const [repeatVisible, setRepeatVisible] = useState(false)
 
   const onPressDate = () => {
-    console.warn(1)
     setDateVisible(!dateVisible)
     setTimeVisible(false)
     setRepeatVisible(false)
@@ -60,9 +58,10 @@ const TaskItem = ({
   }
 
   // useEffect
+  useEffect(() => {setInputValue(nameValue)}, [nameValue])
   useEffect(() => {setDate(dateValue)}, [dateValue])
   useEffect(() => {setTime(timeValue)}, [timeValue])
-  useEffect(() => {setRepeat(repeatTypeEnum.find(item => item.value === repeatValue))}, [repeatValue])
+  useEffect(() => {setRepeat(repeatTypeEnum.find(item => item.id === repeatValue))}, [repeatValue])
 
   const _onChange = (type, value) => {
     if (type === 'name') {
@@ -76,13 +75,13 @@ const TaskItem = ({
     }
     onChange && typeof onChange === 'function' && onChange(type, value)
   }
+
   const TouchableComponent = editable ? TouchableOpacity : TouchableOpacity
   return (
     <View>
       <Input
         style={styles.inputStyle}
         autoCapitalize='none'
-        // editable={editable}
         textAlign='left'
         value={inputValue}
         placeholder='请输入任务名称'
@@ -162,23 +161,25 @@ const TaskItem = ({
 }
 
 const ModalEdit = ({
+  data,
   visible,
-  editable = true,
+  editable = false,
   onConfirm,
   onClose
 }) => {
   const refModal = useRef(null)
-  const [important, setImportant] = useState(taskTypeEnum[0])
+  const [important, setImportant] = useState(taskTypeEnum[0].id)
   const [tagInputValue, setTagInputValue] = useState('')
-  const [tagInputVisible, setTagInputVisible] = useState(!editable)
-  const [formData, setFormData] = useState({
-    name: '',
-    date: Dayjs().format('YYYY-MM-DD'),
-    time: Dayjs().format('HH:mm:ss'),
-    repeat: 1,
-    tag: ['工作', '生活', '开会', '上课', '旅行'],
-    children: data
-  })
+  const [tagInputVisible, setTagInputVisible] = useState(true)
+  const [formData, setFormData] = useState(
+    {
+      name: editable ? data.name : formDefaultData.name,
+      date: editable ? Dayjs(data.dateTime).format('YYYY-MM-DD') : formDefaultData.date,
+      time: editable ? Dayjs(data.dateTime).format('HH:mm:ss') : formDefaultData.time,
+      repeatType: editable ? data.repeatType : formDefaultData.repeatType,
+      tags: editable ? data.tags : formDefaultData.tags
+    }
+  )
 
   useEffect(() => {
     if (!(refModal && refModal.current)) return
@@ -192,23 +193,23 @@ const ModalEdit = ({
   const onPressImportantItem = value => setImportant(value)
 
   const onAddTagItem = value => {
-    formData.tag.push(value)
-    onFormDataChange('tag', formData.tag)
+    formData.tags.push(value)
+    onFormDataChange('tags', formData.tags)
   }
 
   const onDelTagItem = index => {
-    const delItem = formData.tag.splice(index, 1)
+    const delItem = formData.tags.splice(index, 1)
     if (delItem[0] === tagInputValue) {
       setTagInputValue('')
       setTagInputVisible(true)
     }
-    onFormDataChange('tag', formData.tag)
+    onFormDataChange('tags', formData.tags)
   }
 
   const onTagInputBlur = () => {
     if (!tagInputValue) return
     setTagInputVisible(false)
-    !formData.tag.includes(tagInputValue) && onAddTagItem(tagInputValue)
+    !formData.tags.includes(tagInputValue) && onAddTagItem(tagInputValue)
   }
 
   const onFormDataChange = (type, value) => {
@@ -226,6 +227,8 @@ const ModalEdit = ({
     // 需要打接口添加数据 TODO:
     onConfirm && typeof onConfirm === 'function' && onConfirm(formData)
   }
+
+  const importantItem = taskTypeEnum.find(item => item.id === important)
   
   return (
     <View>
@@ -247,12 +250,12 @@ const ModalEdit = ({
                 return (
                   <TouchableOpacity
                     key={`importantItem_${importantIndex}`}
-                    onPress={() => onPressImportantItem(importantItem)}
+                    onPress={() => onPressImportantItem(importantItem.id)}
                     style={styles.importantItemView}
                   >
                     <Text style={styles.importantText}>{importantItem.label}</Text>
                     {
-                      (important && important.value) === importantItem.value &&
+                      important === importantItem.id &&
                       <View style={styles.importantTag} />
                     }
                   </TouchableOpacity>
@@ -265,7 +268,9 @@ const ModalEdit = ({
               style={[
                 styles.rowItemText,
                 { color: '#1E90FF' }
-              ]}>{important.placeholder}</Text>
+              ]}>{
+                importantItem && importantItem.placeholder
+              }</Text>
           </View>
           <ScrollView style={styles.formView}>
             <TaskItem
@@ -273,14 +278,14 @@ const ModalEdit = ({
               name={formData.name}
               date={formData.date}
               time={formData.time}
-              repeat={formData.repeat}
+              repeat={formData.repeatType}
             />
             <View>
               <View style={styles.row}>
                 {
-                  formData.tag &&
-                  formData.tag.length > 0 &&
-                  formData.tag.map((tagItem, tagIndex) =>
+                  formData.tags &&
+                  formData.tags.length > 0 &&
+                  formData.tags.map((tagItem, tagIndex) =>
                     <TouchableOpacity
                       key={`tagItem_${tagIndex}`}
                       style={styles.tagItemView}

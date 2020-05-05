@@ -17,12 +17,12 @@ export const userListDefault = [
 ]
 
 export const taskListDefault = [
-  {id: 1, name: '我是第一个任务', userId: 1, taskType: 1, repeatType: 1, date: '2020-04-26', status: 1},
-  {id: 2, name: '我是第二个任务', userId: 1, taskType: 2, repeatType: 2, date: '2020-04-25', status: 2},
-  {id: 3, name: '我是第三个任务', userId: 1, taskType: 3, repeatType: 3, date: '2020-04-24', status: 3},
-  {id: 4, name: '我是第四个任务', userId: 1, taskType: 4, repeatType: 1, date: '2020-04-23', status: 1},
-  {id: 5, name: '我是第五个任务', userId: 1, taskType: 1, repeatType: 2, date: '2020-04-22', status: 2},
-  {id: 6, name: '我是第六个任务', userId: 1, taskType: 2, repeatType: 3, date: '2020-04-21', status: 3}
+  {id: 1, name: '我是第一个任务', userId: 1, taskType: 1, repeatType: 1, tags: ['旅游', '生活', '工作', '公主', '连接'], createDate: '2020-04-26 00:00:00', dateTime: '2020-04-26 00:00:00', status: 1},
+  {id: 2, name: '我是第二个任务', userId: 1, taskType: 2, repeatType: 2, tags: ['旅游', '生活', '工作', '公主'], createDate: '2020-04-25 00:00:00', dateTime: '2020-04-25 00:00:00', status: 2},
+  {id: 3, name: '我是第三个任务', userId: 1, taskType: 3, repeatType: 3, tags: ['旅游', '生活', '工作'], createDate: '2020-04-24 00:00:00', dateTime: '2020-04-24 00:00:00', status: 3},
+  {id: 4, name: '我是第四个任务', userId: 1, taskType: 4, repeatType: 1, tags: ['旅游', '生活'], createDate: '2020-04-23 00:00:00', dateTime: '2020-04-23 00:00:00', status: 1},
+  {id: 5, name: '我是第五个任务', userId: 1, taskType: 1, repeatType: 2, tags: ['旅游'], createDate: '2020-04-22 00:00:00', dateTime: '2020-04-22 00:00:00', status: 2},
+  {id: 6, name: '我是第六个任务', userId: 1, taskType: 2, repeatType: 3, tags: [], createDate: '2020-04-21 00:00:00', dateTime: '2020-04-21 00:00:00', status: 3}
 ]
 
 export const taskRecordListDefault = [

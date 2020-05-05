@@ -9,9 +9,9 @@ import { useSafeArea } from 'react-native-safe-area-context'
 // screen
 import HomeScreen from '../pages/home'
 import ScheduleScreen from '../pages/schedule'
-import ScheduleListScreen from '../pages/schedule/list'
 import MineScreen from '../pages/mine'
 import QuadrantScreen from '../pages/quadrant'
+import TestScreen from '../pages/test'
 
 // modal
 import ModalEdit from '../components/ModalEdit'
@@ -55,22 +55,22 @@ const TabScreens = [
   // },
   {
     name: 'ScheduleList',
-    component: ScheduleListScreen,
+    component: TestScreen,
     options: {
       type: 'scheduleList',
       tabBarLabel: '时刻列表',
       tabBarIcon: 'list'
     }
   },
-  {
-    name: 'ScheduleAdd',
-    component: ScheduleListScreen,
-    options: {
-      type: 'scheduleAdd',
-      tabBarLabel: '时刻列表',
-      tabBarIcon: 'list'
-    }
-  },
+  // {
+  //   name: 'ScheduleAdd',
+  //   component: ScheduleListScreen,
+  //   options: {
+  //     type: 'scheduleAdd',
+  //     tabBarLabel: '时刻列表',
+  //     tabBarIcon: 'list'
+  //   }
+  // },
 ]
 
 const Tab = createBottomTabNavigator()
@@ -250,7 +250,17 @@ const BottomTabNavigator = () => {
       {
         TabScreens && TabScreens.length > 0 &&
         TabScreens.map((tsItem, tsIndex) =>
-          <Tab.Screen key={`tsItem_${tsIndex}`} {...tsItem} />
+          <Tab.Screen
+            key={`tsItem_${tsIndex}`}
+            // options={
+            //   {
+            //     style: {
+            //       paddingBottom: 400
+            //     }
+            //   }
+            // }
+            {...tsItem}
+          />
         )
       }
     </Tab.Navigator>
@@ -260,7 +270,7 @@ const BottomTabNavigator = () => {
 const styles = StyleSheet.create({
   stackNavigator: {
     width: '100%',
-    // backgroundColor: 'blue',
+    backgroundColor: '#fff',
     flexDirection: 'row',
     paddingHorizontal: 16,
     paddingVertical: 16,

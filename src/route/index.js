@@ -8,6 +8,7 @@ import { navigationRef } from './NavigationService'
 
 // screen
 import HomeScreen from '../pages/home'
+import LoginScreen from '../pages/login'
 // import ScheduleListScreen from '../pages/schedule/list'
 // import ScheduleDetailScreen from '../pages/schedule/detail'
 import ScheduleStopWatchScreen from '../pages/schedule/watch'
@@ -24,9 +25,8 @@ const Router = () => {
       screenOptions={{
         headerShown: false
       }}>
+      <Stack.Screen name="LoginScreen" component={LoginScreen} />
       <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
-      {/* <Stack.Screen name="ScheduleHomeScreen" component={ScheduleHomeScreen} /> */}
-      <Stack.Screen name="HomeScreen" component={HomeScreen} />
       <Stack.Screen name="ScheduleStopWatchScreen" component={ScheduleStopWatchScreen} />
     </Stack.Navigator>
   )

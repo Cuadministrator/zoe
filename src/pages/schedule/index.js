@@ -6,6 +6,7 @@ import dayjs from 'dayjs'
 import { Icon, Calendar } from '../../components'
 import { SafeAreaView, useSafeArea } from 'react-native-safe-area-context'
 import storage from '../../storage'
+import { Agenda } from 'react-native-calendars'
 
 // config
 import { taskTypeEnum } from '../../common/config'
@@ -52,19 +53,20 @@ const RenderItem = ({
   )
 }
 
-const ScheduleHome = () => {
+const ScheduleHome = ({navigation}) => {
   const safeArea = useSafeArea()
+  const [date, setDate] = useState(dayjs())
   const [data, setData] = useState(null)
 
   useEffect(() => {
     initData()
-    return () => {
-    }
-  }, [])
+  }, [date])
 
   const initData = async () => {
-    const res = await getScheduleHomeData(dayjs('2020-04-29 00:00:00'))
-    setData(res)
+    const res = await getScheduleHomeData(date)
+    if (res) {
+      setData(res)
+    }
   }
 
   const getScheduleHomeData = async (date) => {
@@ -72,52 +74,55 @@ const ScheduleHome = () => {
     const taskRecordRes = await storage.get('taskRecordList')
     let result = []
     let dateTime = dayjs(date)
-    if (!(taskRes && taskRecordRes)) return
+    if (!(taskRes && taskRecordRes)) return console.warn(taskRes, taskRecordRes)
     const taskRecordData = taskRecordRes.map(recordItem => {
       let item = {}
       const taskItem = taskRes.find(item => item.id === recordItem.taskId)
       if (taskItem) item = {...recordItem, ...taskItem}
       return item
     })
-    for (let i = 0; i< 24; i++) {
+    for (let i = 0; i <= 24; i++) {
       const hourTime = dateTime.hour(i)
       const startTime = hourTime.minute(0).second(0)
       const endTime = hourTime.minute(59).second(59)
+      let taskData = []
+      taskRecordData.forEach(trItem => {
+        if (
+          dayjs(trItem.startTime).isSameOrAfter(startTime) &&
+          dayjs(trItem.endTime).isBefore(endTime) &&
+          !taskData.find(taskItem => taskItem.taskId === trItem.taskId)
+        ) {
+          taskData.push(trItem)
+        }
+      })
       const item = {
         id: i + 1,
-        label: hourTime.format('HH:00'),
-        taskData: taskRecordData.filter(trItem => {
-          if (
-            dayjs(startTime).isSameOrAfter(trItem.startTime) &&
-            dayjs(startTime).isBefore(trItem.endTime)
-          ) {
-            return trItem
-          }
-        })
+        label: i === 24 ? '24:00' : hourTime.format('HH:00'),
+        taskData
       }
       result.push(item)
     }
     return result
   }
 
+  const onDayChange = value => {
+    if (!value) return
+    setDate(value.timestamp)
+  }
+
+  const goWatch = () => {
+    navigation.push('ScheduleStopWatchScreen', { refresh: initData })
+  }
+
   return (
     <View
       style={[
         styles.pageView,
+        { paddingTop: safeArea.top }
       ]}
     >
-      <Calendar
-        style={[
-          styles.calendar,
-          {
-            top: safeArea.top,
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            height: Dimensions.get('window').height,
-            zIndex: 9
-          }
-        ]}
+      <Agenda
+        onDayPress={onDayChange}
       >
         <FlatList
           style={{flex: 1, paddingTop: 12}}
@@ -126,16 +131,20 @@ const ScheduleHome = () => {
             ({item, index}) => <RenderItem {...item} index={index} />
           }
         />
-      </Calendar>
-      <TouchableOpacity
-        style={styles.stackNavigatorBottom}
-      >
-        <Icon
-          name='clock'
-          color='#666'
-          size={56}
-        />
-      </TouchableOpacity>
+      </Agenda>
+      <View style={styles.footerView}>
+        <TouchableOpacity
+          style={styles.stackNavigatorBottom}
+          onPress={goWatch}
+        >
+          <Icon
+            name='clock'
+            color='#999'
+            size={56}
+            style={{backgroundColor: '#fff', borderRadius: 28, overflow: 'hidden'}}
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }
@@ -143,13 +152,18 @@ const ScheduleHome = () => {
 const styles = StyleSheet.create({
   pageView: {
     flex: 1,
-    paddingBottom: 30
+    backgroundColor: '#fff'
+  },
+  footerView: {
+    height: 30,
+    backgroundColor: '#fff'
   },
   calendar: {
   },
   taskRow: {
     height: 48,
     flexDirection: 'row',
+    // backgroundColor: 'blue'
   },
   taskLabel: {
     width: 56,
