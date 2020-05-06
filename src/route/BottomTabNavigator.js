@@ -13,9 +13,9 @@ import MineScreen from '../pages/mine'
 import QuadrantScreen from '../pages/quadrant'
 import TestScreen from '../pages/test'
 
-// modal
-import ModalEdit from '../components/ModalEdit'
+// 以下导航栏组件按照 react-navigation 文档配置。
 
+// 导航栏配置
 const TabScreens = [
   {
     name: 'Home',
@@ -57,6 +57,7 @@ const TabScreens = [
 
 const Tab = createBottomTabNavigator()
 
+// 底部导航栏组件
 const MyTabBar = ({
   state,
   descriptors,
@@ -66,9 +67,7 @@ const MyTabBar = ({
 }) => {
   const safeArea = useSafeArea()
   const [showMenu, setShowMenu] = useState(true)
-  const [modalEditVisible, setModalEditVisible] = useState(false)
   let scheduleList = null
-  let scheduleAdd = null
   let funcBarList = []
   if (
     state &&
@@ -80,8 +79,6 @@ const MyTabBar = ({
         const type = descriptors[route.key].options.type
         if (type === 'scheduleList') {
           scheduleList = {id: index, value: route}
-        } else if (type === 'scheduleAdd') {
-          scheduleAdd = {id: index, value: route}
         } else if (type === 'funcBar') {
           funcBarList.push(route)
         }
@@ -92,6 +89,7 @@ const MyTabBar = ({
     <View
       style={[
         styles.stackNavigator,
+        // 底部的安全区域高度设置
         { paddingBottom: safeArea.bottom }
       ]}
     >
@@ -118,27 +116,6 @@ const MyTabBar = ({
           />
         </View>
       }
-      {
-        !!scheduleAdd &&
-        <View
-          style={styles.centerView}>
-            <Icon
-              name='plus-circle'
-              color={state.index === scheduleAdd.id ? activeTintColor : inactiveTintColor}
-              size={64}
-              onPress={
-                () => {
-                  setModalEditVisible(true)
-                }
-              }
-            />
-            <ModalEdit
-              editable={false}
-              visible={modalEditVisible}
-              onClose={() => setModalEditVisible(false)}
-            />
-        </View>
-      }
       <View style={styles.tabNavigator}>
         {
           showMenu && funcBarList && funcBarList.length > 0 &&
@@ -146,7 +123,6 @@ const MyTabBar = ({
             const routeLength = funcBarList.length
             const { options } = descriptors[route.key]
             // 如果不为 funcBar 的时候 不渲染
-            // console.warn(options)
             if (options.type !== 'funcBar') return null
             const isFocused = state.index === index
             // 点击
@@ -236,7 +212,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   leftView: {
-    // backgroundColor: 'red',
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -249,7 +224,6 @@ const styles = StyleSheet.create({
   tabNavigator: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    // backgroundColor: 'green'
   },
   tabItemView: {
   }

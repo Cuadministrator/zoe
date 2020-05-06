@@ -3,7 +3,7 @@ import { View, Text, FlatList, Dimensions, TouchableOpacity, StyleSheet } from '
 import dayjs from 'dayjs'
 
 // components
-import { Icon, Calendar } from '../../components'
+import { Icon } from '../../components'
 import { SafeAreaView, useSafeArea } from 'react-native-safe-area-context'
 import storage from '../../storage'
 import { Agenda } from 'react-native-calendars'
@@ -55,9 +55,12 @@ const RenderItem = ({
 
 const ScheduleHome = ({navigation}) => {
   const safeArea = useSafeArea()
+  // 选择的时间 默认当天
   const [date, setDate] = useState(dayjs())
+  // 数据列表
   const [data, setData] = useState(null)
 
+  // 初始化数据
   useEffect(() => {
     initData()
   }, [date])
@@ -75,12 +78,14 @@ const ScheduleHome = ({navigation}) => {
     let result = []
     let dateTime = dayjs(date)
     if (!(taskRes && taskRecordRes)) return console.warn(taskRes, taskRecordRes)
+    // 任务数据和任务记录数据组合
     const taskRecordData = taskRecordRes.map(recordItem => {
       let item = {}
       const taskItem = taskRes.find(item => item.id === recordItem.taskId)
       if (taskItem) item = {...recordItem, ...taskItem}
       return item
     })
+    // 任务数据记录 和 时间表组合
     for (let i = 0; i <= 24; i++) {
       const hourTime = dateTime.hour(i)
       const startTime = hourTime.minute(0).second(0)
@@ -110,6 +115,7 @@ const ScheduleHome = ({navigation}) => {
     setDate(value.timestamp)
   }
 
+  // 跳转任务完成页
   const goWatch = () => {
     navigation.push('ScheduleStopWatchScreen', { refresh: initData })
   }
@@ -121,9 +127,11 @@ const ScheduleHome = ({navigation}) => {
         { paddingTop: safeArea.top }
       ]}
     >
+      {/* 日历选择 */}
       <Agenda
         onDayPress={onDayChange}
       >
+        {/* 时间表 */}
         <FlatList
           style={{flex: 1, paddingTop: 12}}
           data={data}
@@ -132,6 +140,7 @@ const ScheduleHome = ({navigation}) => {
           }
         />
       </Agenda>
+      {/* 跳转按钮 */}
       <View style={styles.footerView}>
         <TouchableOpacity
           style={styles.stackNavigatorBottom}
@@ -157,8 +166,6 @@ const styles = StyleSheet.create({
   footerView: {
     height: 30,
     backgroundColor: '#fff'
-  },
-  calendar: {
   },
   taskRow: {
     height: 48,

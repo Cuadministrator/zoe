@@ -13,14 +13,16 @@ import { getTaskList, editTask, completeTask, deleteTask, addTask } from '../../
 
 const HomeScreen = ({globalStore}) => {
   const safeArea = useSafeArea()
+  // 列表数据
   const [data, setData] = useState([])
+  // 弹窗类型 添加或者编辑
   const [modalType, setModalType] = useState('edit')
+  // 编辑弹窗的数据
   const [editTaskId, setEditTaskId] = useState(null)
+  // 是否显示弹窗
   const [visible, setVisible] = useState(false)
 
-  useEffect(() => {
-    initData()
-  }, [])
+  useEffect(() => { initData() }, [])
 
   const initData = async () => {
     let params = {}
@@ -42,28 +44,39 @@ const HomeScreen = ({globalStore}) => {
     }
   }
 
+  // 显示修改弹窗
   const _onItemEdit = (id, index) => {
     setModalType('edit')
     setEditTaskId(id)
     openModal()
   }
 
+  // 显示添加弹框
+  const openAddModal = () => {
+    setModalType('add')
+    openModal()
+  }
+
+  // 删除回调函数
   const _onItemDelete = async (id, index) => {
     const res = await deleteTask({id})
     res && initData()
   }
 
+  // 完成回调函数
   const _onItemComplete = async (id, index) => {
     const res = await completeTask({id})
     res && initData()
   }
 
+  // 排序回调函数
   const _onDataChange = async nextData => {
     // if (nextData.length !== data.length) {}
     await storage.set('taskList', nextData)
     await initData()
   }
 
+  // 修改回调函数
   const _onModalEdit = async (params) => {
     const res = await editTask(params)
     if (res) {
@@ -71,6 +84,7 @@ const HomeScreen = ({globalStore}) => {
     }
   }
 
+  // 添加回调函数
   const _onModalAdd = async (params) => {
     if (globalStore.user) {
       params.userId = globalStore.user.id
@@ -80,14 +94,9 @@ const HomeScreen = ({globalStore}) => {
       await initData()
     }
   }
-
-  const openAddModal = () => {
-    setModalType('add')
-    openModal()
-  }
-
+  // 显示弹窗
   const openModal = () => setVisible(true)
-
+  // 关闭弹窗
   const closeModal = () => setVisible(false)
 
   const editTaskData = data.find(item => item.id === editTaskId)
@@ -113,6 +122,7 @@ const HomeScreen = ({globalStore}) => {
       <View
         style={styles.footerView}
       >
+        {/* 添加按钮 */}
         <TouchableOpacity
           style={styles.stackNavigatorBottom}
           onPress={openAddModal}
@@ -126,6 +136,7 @@ const HomeScreen = ({globalStore}) => {
         </TouchableOpacity>
       </View>
       {
+        // 弹窗
         !(modalType === 'edit' && !editTask) && visible &&
         <ModalEdit
           editable={modalType === 'edit'}

@@ -3,41 +3,41 @@ import { NavigationContainer } from '@react-navigation/native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 // 配置
+// 路由跳转
 import { navigationRef } from './route/NavigationService'
-import { Provider } from 'mobx-react'
-import store from './store'
+// 数据存储 本地缓存
 import { initAsyncStorage, clearAllAsyncStorage } from './storage'
-import isBetween from 'dayjs/plugin/isBetween'
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
-import weekday from 'dayjs/plugin/weekday'
-
-
-
-// route
-import Route from './route'
+// dayjs 配置
 import dayjs from 'dayjs'
+import isBetween from 'dayjs/plugin/isBetween' // 在两个时间点中
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter' // >= 某个时间
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore' // <= 某个时间
+import weekday from 'dayjs/plugin/weekday' // 目前在星期几
 
-// dayjs
+// route 路由 初始化页面 以及 页面跳转
+import Route from './route'
+
+// dayjs 注册
 dayjs.extend(isBetween)
 dayjs.extend(isSameOrAfter)
 dayjs.extend(isSameOrBefore)
 dayjs.extend(weekday)
-
 
 // clearAllAsyncStorage()
 initAsyncStorage()
 
 const App = () => {
   return (
-    <Provider {...store}>
-      <SafeAreaProvider>
-        <NavigationContainer
-          ref={navigationRef}>
-          <Route />
-        </NavigationContainer>
-      </SafeAreaProvider>
-    </Provider>
+    // 安全区域
+    <SafeAreaProvider>
+      {/* 路由容器 */}
+      <NavigationContainer
+        ref={navigationRef}
+      >
+        {/* 路由 */}
+        <Route />
+      </NavigationContainer>
+    </SafeAreaProvider>
   )
 }
 

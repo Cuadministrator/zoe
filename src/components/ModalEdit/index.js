@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native'
 import Dayjs from 'dayjs'
 
@@ -15,8 +15,8 @@ import {
   taskTypeEnum,
   repeatTypeEnum
 } from '../../common/config'
-import { editTask } from '../../storage/task'
 
+// 添加功能下默认的的数据
 const formDefaultData = {
   name: '',
   date: Dayjs().format('YYYY-MM-DD'),
@@ -33,37 +33,47 @@ const TaskItem = ({
   editable,
   onChange
 }) => {
+  // 任务名称
   const [inputValue, setInputValue] = useState(nameValue || '')
+  // 日期选择
   const [date, setDate] = useState(dateValue || Dayjs().format('YYYY-MM-DD'))
+  // 时间选择
   const [time, setTime] = useState(timeValue || Dayjs().format('HH:mm:ss'))
-  const [repeat, setRepeat] = useState(repeatTypeEnum.find(item => item.id === repeatValue) || repeatTypeEnum[0])
-  // edit
+  // 重复类型选择
+  const [repeat, setRepeat] = useState(repeatValue || repeatTypeEnum[0].id)
+  // 日期滚轮是否现实
   const [dateVisible, setDateVisible] = useState(false)
+  // 时间滚轮是否显示
   const [timeVisible, setTimeVisible] = useState(false)
+  // 重复类型滚轮是否显示
   const [repeatVisible, setRepeatVisible] = useState(false)
 
+  // 点击日期选择弹出或者隐藏
   const onPressDate = () => {
     setDateVisible(!dateVisible)
     setTimeVisible(false)
     setRepeatVisible(false)
   }
+  // 点击时间选择弹出或隐藏
   const onPressTime = () => {
     setTimeVisible(!timeVisible)
     setDateVisible(false)
     setRepeatVisible(false)
   }
+  // 点击重复类型弹出或隐藏
   const onPressRepeat = () => {
     setRepeatVisible(!repeatVisible)
     setTimeVisible(false)
     setDateVisible(false)
   }
 
-  // useEffect
+  // useEffect 用于刷新外部传入数据
   useEffect(() => {setInputValue(nameValue)}, [nameValue])
   useEffect(() => {setDate(dateValue)}, [dateValue])
   useEffect(() => {setTime(timeValue)}, [timeValue])
-  useEffect(() => {setRepeat(repeatTypeEnum.find(item => item.id === repeatValue))}, [repeatValue])
+  useEffect(() => {setRepeat(repeatValue)}, [repeatValue])
 
+  // 内部产生变化后告诉父组件变化
   const _onChange = (type, value) => {
     if (type === 'name') {
       setInputValue(value)
@@ -71,13 +81,13 @@ const TaskItem = ({
       setDate(value)
     } else if (type === 'time') {
       setTime(value)
-    } else if (type === 'repeat') {
+    } else if (type === 'repeatType') {
       setRepeat(value)
     }
     onChange && typeof onChange === 'function' && onChange(type, value)
   }
-
   const TouchableComponent = editable ? TouchableOpacity : TouchableOpacity
+  const repeatTypeItem = repeatTypeEnum.find(rtItem => rtItem.id === repeat)
   return (
     <View>
       <Input
@@ -88,6 +98,7 @@ const TaskItem = ({
         placeholder='请输入任务名称'
         onChange={value => _onChange('name', value)}
       />
+      {/* 时间 */}
       <View
         style={[
           styles.rowItem,
@@ -121,11 +132,12 @@ const TaskItem = ({
           <Text
             style={[
               styles.rowItemText
-            ]}>{repeat && repeat.label}</Text>
+            ]}>{repeatTypeItem && repeatTypeItem.label}</Text>
         </TouchableComponent>
       </View>
       <View>
         {
+          // 日期选择器
           dateVisible &&
           <Datepicker
             proportion={[1, 1, 1]}
@@ -137,6 +149,7 @@ const TaskItem = ({
           />
         }
         {
+          // 时间选择器
           timeVisible &&
           <Timepicker
             proportion={[1, 1, 1]}
@@ -146,13 +159,14 @@ const TaskItem = ({
           />
         }
         {
+          // 重复类型选择器
           repeatVisible && <Scrollpicker
             proportion={[1]}
             offsetCount={1}
             list={[repeatTypeEnum]}
-            value={[repeatTypeEnum.findIndex(reItem => reItem.id === repeat.id)]}
+            value={[repeatTypeEnum.findIndex(reItem => reItem.id === repeat)]}
             onChange={(columnIndex, rowIndex) => {
-              _onChange('repeat', repeatTypeEnum[rowIndex])
+              _onChange('repeatType', repeatTypeEnum[rowIndex].id)
             }}
           />
         }
@@ -169,10 +183,15 @@ const ModalEdit = ({
   onModalAdd,
   onClose
 }) => {
+  // ref
   const refModal = useRef(null)
+  // 重要程度类型
   const [important, setImportant] = useState(taskTypeEnum[0].id)
+  // 标签输入栏
   const [tagInputValue, setTagInputValue] = useState('')
+  // 标签输入栏是否显示
   const [tagInputVisible, setTagInputVisible] = useState(true)
+  // 需要提交的数据
   const [formData, setFormData] = useState(
     {
       name: editable ? defaultData.name : formDefaultData.name,
@@ -183,6 +202,7 @@ const ModalEdit = ({
     }
   )
 
+  // 监听外部传入visible是否变化来打开或者关闭弹窗
   useEffect(() => {
     if (!(refModal && refModal.current)) return
     if (visible) {
@@ -192,13 +212,16 @@ const ModalEdit = ({
     }
   }, [visible])
 
+  // 选择的任务类型
   const onPressImportantItem = value => setImportant(value)
 
+  // 添加tag的某一项
   const onAddTagItem = value => {
     formData.tags.push(value)
     onFormDataChange('tags', formData.tags)
   }
 
+  // 删除tag的某一项
   const onDelTagItem = index => {
     const delItem = formData.tags.splice(index, 1)
     if (delItem[0] === tagInputValue) {
@@ -208,12 +231,14 @@ const ModalEdit = ({
     onFormDataChange('tags', formData.tags)
   }
 
+  // tag的输入栏失去焦点 添加数据
   const onTagInputBlur = () => {
     if (!tagInputValue) return
     setTagInputVisible(false)
     !formData.tags.includes(tagInputValue) && onAddTagItem(tagInputValue)
   }
 
+  // 内部 TaskItem 发生变化后合并数据
   const onFormDataChange = (type, value) => {
     setFormData({
       ...formData,
@@ -221,10 +246,12 @@ const ModalEdit = ({
     })
   }
 
+  // 当弹窗关闭的时候调用
   const _onClose = () => {
     onClose && typeof onClose === 'function' && onClose()
   }
 
+  // 当点击提交按钮的时候调用
   const _onConfirm = async () => {
     const { date, time, ...resetProps } = formData
     const params = {
@@ -232,10 +259,10 @@ const ModalEdit = ({
       dateTime: Dayjs(`${date} ${time}`).format('YYYY-MM-DD HH:mm:ss'),
       ...resetProps
     }
-    if (editable) {
+    if (editable) { // 如果是编辑态调用编辑方法
       params.id = defaultData.id,
       onModalEdit && typeof onModalEdit === 'function' && onModalEdit(params)
-    } else {
+    } else { // 添加态调用添加方法
       onModalAdd && typeof onModalAdd === 'function' && onModalAdd(params)
     }
   }
@@ -256,6 +283,7 @@ const ModalEdit = ({
         <View
           style={styles.contextContainer}
         >
+          {/* 重要程度选择 */}
           <View style={styles.importantView}>
             {
               taskTypeEnum.map((importantItem, importantIndex) => {
@@ -285,6 +313,7 @@ const ModalEdit = ({
               }</Text>
           </View>
           <ScrollView style={styles.formView}>
+            {/* 任务详情 */}
             <TaskItem
               editable={editable}
               name={formData.name}
@@ -293,6 +322,7 @@ const ModalEdit = ({
               repeat={formData.repeatType}
               onChange={onFormDataChange}
             />
+            {/* tags 标签 */}
             <View>
               <View style={styles.row}>
                 {

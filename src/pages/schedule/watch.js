@@ -17,19 +17,29 @@ const ScheduleWatch = ({
   route,
   navigation
 }) => {
+  // ref
   const timeListRef = useRef(null)
+  // 时间
   const [time, setTime] = useState(null)
+  // 上一次时间
   const [proTime, setProTime] = useState(dayjs())
+  // 时间记录列表
   const [timeList, setTimeList] = useState([])
+  // 开始记时
   const [stopwatchStart, setStopwatchStart] = useState(false)
+  // 重置记时
   const [stopwatchReset, setStopwatchReset] = useState(false)
+  // 显示弹窗
   const [modalVisible, setModalVisible] = useState(false)
 
+  // 根据是否开始记时来存储时间记录
   useEffect(() => {
     if (!time) return
     if (stopwatchStart) {
+      // 记录上一次时间
       setProTime(dayjs())
     } else {
+      // 记录本次时间段
       setTimeList(
         [
           ...timeList,
@@ -42,36 +52,42 @@ const ScheduleWatch = ({
     }
   }, [stopwatchStart])
 
+  // 列表过多触底滚动
   useEffect(() => {
     if (timeListRef.current) {
       timeListRef.current.scrollToEnd()
     }
   }, [timeList])
 
+  // 开始记时
   const toggleStopwatch = () => {
     setStopwatchStart(!stopwatchStart)
     setStopwatchReset(false)
   }
 
+  // 重置记时
   const resetStopwatch = () => {
     setStopwatchStart(false)
     setStopwatchReset(true)
     setTimeList([])
   }
   
+  // 获取format后的时间
   const getFormattedTime = (time) => {
     setTime(time)
   }
 
+  // 完成任务
   const taskComplete = async (taskList) => {
-    // timeList
-    // taskList
+    // timeList taskList
+    // 刷新上一个页面
     const { refresh } = route.params
     const taskRecordRes = await storage.get('taskRecordList')
     let index = taskRecordRes && taskRecordRes.length > 0
       ? taskRecordRes.length + 1
       : 1
     let result = []
+    // 生成完成任务的记录
     timeList.forEach((timeItem, timeIndex) => {
       taskList.forEach((taskItem, taskIndex) => {
         result.push({
@@ -86,20 +102,26 @@ const ScheduleWatch = ({
       result = [...taskRecordRes, ...result]
     }
     storage.save('taskRecordList', result)
+    // 重置时间表
     resetStopwatch()
+    // 刷新上一个页面
     refresh && typeof refresh === 'function' && refresh()
+    // 返回上一个页面
     navigation.goBack()
   }
 
+  // 返回上一个页面
   const goSchedule = () => {
     navigation.goBack()
   }
 
+  // 打开任务弹窗
   const openTaskCompleteModal = () => {
     if (!(timeList && timeList.length > 0)) return Tip.show('请先生成记录后再完成任务！')
     setModalVisible(true)
   }
 
+  // 格式化时间数据
   const formatTime = value => dayjs(value).format('YYYY-MM-DD HH:mm:ss')
 
   return (
@@ -108,6 +130,7 @@ const ScheduleWatch = ({
         styles.pageView
       ]}
     >
+      {/* 计时器组件 */}
       <Stopwatch
         laps
         msecs
@@ -117,6 +140,7 @@ const ScheduleWatch = ({
         getTime={getFormattedTime}
         // getMsecs={value => console.warn(1, value)}
       />
+      {/* 记时列表 */}
       <View style={styles.timeList}>
         <FlatList
           ref={timeListRef}
@@ -148,6 +172,7 @@ const ScheduleWatch = ({
           }
         />
       </View>
+      {/* 操作按钮 */}
       <View style={styles.handleButtons}>
         <TouchableHighlight
           underlayColor='#e9e9e9'
@@ -173,6 +198,7 @@ const ScheduleWatch = ({
             ]}>{!stopwatchStart ? "Start" : "Stop"}</Text>
         </TouchableHighlight>
       </View>
+      {/* 返回和打开完成任务弹窗按钮 */}
       <View
         style={[
           styles.footerView,
@@ -201,6 +227,7 @@ const ScheduleWatch = ({
           />
         </TouchableOpacity>
       </View>
+      {/* 完成任务弹窗 */}
       <TaskCompleteModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
