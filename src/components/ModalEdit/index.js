@@ -40,7 +40,7 @@ const TaskItem = ({
   // 时间选择
   const [time, setTime] = useState(timeValue || Dayjs().format('HH:mm:ss'))
   // 重复类型选择
-  const [repeat, setRepeat] = useState(repeatTypeEnum.find(item => item.id === repeatValue) || repeatTypeEnum[0])
+  const [repeat, setRepeat] = useState(repeatValue || repeatTypeEnum[0].id)
   // 日期滚轮是否现实
   const [dateVisible, setDateVisible] = useState(false)
   // 时间滚轮是否显示
@@ -71,7 +71,7 @@ const TaskItem = ({
   useEffect(() => {setInputValue(nameValue)}, [nameValue])
   useEffect(() => {setDate(dateValue)}, [dateValue])
   useEffect(() => {setTime(timeValue)}, [timeValue])
-  useEffect(() => {setRepeat(repeatTypeEnum.find(item => item.id === repeatValue))}, [repeatValue])
+  useEffect(() => {setRepeat(repeatValue)}, [repeatValue])
 
   // 内部产生变化后告诉父组件变化
   const _onChange = (type, value) => {
@@ -81,12 +81,13 @@ const TaskItem = ({
       setDate(value)
     } else if (type === 'time') {
       setTime(value)
-    } else if (type === 'repeat') {
+    } else if (type === 'repeatType') {
       setRepeat(value)
     }
     onChange && typeof onChange === 'function' && onChange(type, value)
   }
   const TouchableComponent = editable ? TouchableOpacity : TouchableOpacity
+  const repeatTypeItem = repeatTypeEnum.find(rtItem => rtItem.id === repeat)
   return (
     <View>
       <Input
@@ -131,7 +132,7 @@ const TaskItem = ({
           <Text
             style={[
               styles.rowItemText
-            ]}>{repeat && repeat.label}</Text>
+            ]}>{repeatTypeItem && repeatTypeItem.label}</Text>
         </TouchableComponent>
       </View>
       <View>
@@ -163,9 +164,9 @@ const TaskItem = ({
             proportion={[1]}
             offsetCount={1}
             list={[repeatTypeEnum]}
-            value={[repeatTypeEnum.findIndex(reItem => reItem.id === repeat.id)]}
+            value={[repeatTypeEnum.findIndex(reItem => reItem.id === repeat)]}
             onChange={(columnIndex, rowIndex) => {
-              _onChange('repeat', repeatTypeEnum[rowIndex])
+              _onChange('repeatType', repeatTypeEnum[rowIndex].id)
             }}
           />
         }
