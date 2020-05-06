@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { View, TouchableOpacity, StyleSheet } from 'react-native'
+import { inject, observer } from 'mobx-react'
 // import EntypoIcons from 'react-native-vector-icons/dist/Entypo'
 import { Icon } from '../components'
 
@@ -45,10 +46,10 @@ const TabScreens = [
     }
   },
   {
-    name: 'ScheduleList',
+    name: 'SideMenu',
     component: TestScreen,
     options: {
-      type: 'scheduleList',
+      type: 'sideMenu',
       tabBarLabel: '时刻列表',
       tabBarIcon: 'list'
     }
@@ -63,11 +64,12 @@ const MyTabBar = ({
   descriptors,
   navigation,
   activeTintColor = '#F6BB42',
-  inactiveTintColor = '#999'
+  inactiveTintColor = '#999',
+  changeSideMenu
 }) => {
   const safeArea = useSafeArea()
   const [showMenu, setShowMenu] = useState(true)
-  let scheduleList = null
+  let sideMenu = null
   let funcBarList = []
   if (
     state &&
@@ -77,10 +79,10 @@ const MyTabBar = ({
     state.routes.forEach(
       (route, index) => {
         const type = descriptors[route.key].options.type
-        if (type === 'scheduleList') {
-          scheduleList = {id: index, value: route}
-        } else if (type === 'funcBar') {
+        if (type === 'funcBar') {
           funcBarList.push(route)
+        } else if (type === 'sideMenu') {
+          sideMenu = {id: index, value: route}
         }
       }
     )
@@ -90,29 +92,17 @@ const MyTabBar = ({
       style={[
         styles.stackNavigator,
         // 底部的安全区域高度设置
-        { paddingBottom: safeArea.bottom }
+        { paddingBottom: safeArea.bottom || 16 }
       ]}
     >
       {
-        !!scheduleList &&
+        !!sideMenu &&
         <View style={styles.leftView}>
           <Icon
             name='list'
-            color={state.index === scheduleList.id ? activeTintColor : inactiveTintColor}
+            color={state.index === sideMenu.id ? activeTintColor : inactiveTintColor}
             size={32}
-            onPress={
-              () => {
-                const event = navigation.emit({
-                  type: 'tabPress',
-                  target: scheduleList.value.key,
-                  canPreventDefault: true,
-                })
-      
-                if (!event.defaultPrevented) {
-                  navigation.navigate(scheduleList.value.name)
-                }
-              }
-            }
+            onPress={changeSideMenu}
           />
         </View>
       }
@@ -167,21 +157,29 @@ const MyTabBar = ({
           ]}
           onPress={() => setShowMenu(!showMenu)}
         >
-            <Icon
-              name={showMenu ? 'maximize-2' : 'minimize-2'}
-              color='#999'
-              size={32} />
+          <Icon
+            name={showMenu ? 'maximize-2' : 'minimize-2'}
+            color='#999'
+            size={32}
+          />
         </TouchableOpacity>
       </View>
     </View>
   )
 }
 
-const BottomTabNavigator = () => {
+const BottomTabNavigator = ({globalStore}) => {
+  const changeSideMenu = () => {
+    globalStore.changeSideMenuVisible(!globalStore.sideMenuVisible)
+  }
   return (
     <Tab.Navigator
       tabBar={
-        props => <MyTabBar {...props} />
+        props =>
+        <MyTabBar
+          {...props}
+          changeSideMenu={changeSideMenu}
+        />
       }
       tabBarOptions={{
         activeTintColor: '#434a54',
@@ -203,23 +201,15 @@ const BottomTabNavigator = () => {
 
 const styles = StyleSheet.create({
   stackNavigator: {
-    width: '100%',
     backgroundColor: '#fff',
     flexDirection: 'row',
     paddingHorizontal: 16,
-    paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   leftView: {
     alignItems: 'center',
     justifyContent: 'center'
-  },
-  centerView: {
-    position: 'absolute',
-    bottom: 56,
-    left: '50%',
-    transform: [{translateX: -30}, {translateY: 30}]
   },
   tabNavigator: {
     flexDirection: 'row',
@@ -229,4 +219,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default BottomTabNavigator
+export default inject('globalStore')(observer(BottomTabNavigator))

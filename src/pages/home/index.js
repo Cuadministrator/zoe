@@ -71,8 +71,7 @@ const HomeScreen = ({globalStore}) => {
 
   // 排序回调函数
   const _onDataChange = async nextData => {
-    // if (nextData.length !== data.length) {}
-    await storage.set('taskList', nextData)
+    await storage.save('taskList', nextData)
     await initData()
   }
 

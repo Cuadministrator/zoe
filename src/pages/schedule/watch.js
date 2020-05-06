@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
-import { View, Text, TouchableHighlight, StyleSheet, TouchableOpacity, FlatList } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { View, Text, TouchableHighlight, StyleSheet, TouchableOpacity, FlatList, ScrollView, Dimensions } from 'react-native'
+import { SafeAreaView, useSafeArea } from 'react-native-safe-area-context'
 import dayjs from 'dayjs'
 import storage from 'react-native-simple-store'
 
@@ -17,6 +17,7 @@ const ScheduleWatch = ({
   route,
   navigation
 }) => {
+  const safeArea = useSafeArea()
   // ref
   const timeListRef = useRef(null)
   // 时间
@@ -126,114 +127,122 @@ const ScheduleWatch = ({
 
   return (
     <SafeAreaView
+      style={{flex: 1}}
+    >
+      <ScrollView style={{flex: 1}}>
+        <View style={[
+          styles.pageView,
+          { paddingBottom: 95 + safeArea.bottom }
+        ]}>
+          {/* 计时器组件 */}
+          <Stopwatch
+            laps
+            msecs
+            options={options}
+            start={stopwatchStart}
+            reset={stopwatchReset}
+            getTime={getFormattedTime}
+          />
+          {/* 记时列表 */}
+          <View style={styles.timeList}>
+            <FlatList
+              ref={timeListRef}
+              data={timeList}
+              getItemLayout={(data, index) => (
+                {
+                  length: ITEM_HEIGHT,
+                  offset: ITEM_HEIGHT * index,
+                  index
+                }
+              )}
+              ListEmptyComponent={
+                <View style={{height: ITEMS_HEIGHT, alignItems: 'center', justifyContent: 'center'}}>
+                  <Text>点击开始后再次点击生成记录</Text>
+                </View>
+              }
+              renderItem={
+                ({item, index}) =>
+                  <View
+                    key={`timerItem_${index}`}
+                    style={styles.timeItemView}
+                  >
+                    <Text style={styles.timeItemText}>记录{index}</Text>
+                    <View>
+                      <Text style={styles.timeItemText}>开始时间：{formatTime(item.start)}</Text>
+                      <Text style={styles.timeItemText}>结束时间：{formatTime(item.end)}</Text>
+                    </View>
+                  </View>
+              }
+            />
+          </View>
+          {/* 操作按钮 */}
+          <View style={styles.handleButtons}>
+            <TouchableHighlight
+              underlayColor='#e9e9e9'
+              style={styles.handleButton}
+              onPress={resetStopwatch}>
+              <Text style={styles.handleButtonText}>Reset</Text>
+            </TouchableHighlight>
+            <TouchableHighlight
+              underlayColor='#e9e9e9'
+              style={[
+                styles.handleButton,
+                {
+                  backgroundColor: !stopwatchStart
+                    ? 'rgba(0, 255, 0, 0.1)'
+                    : 'rgba(255, 0, 0, 0.1)'
+                }
+              ]}
+              onPress={toggleStopwatch}>
+              <Text
+                style={[
+                  styles.handleButtonText,
+                  { color: !stopwatchStart ? '#BCC152' : '#FC6E51' }
+                ]}>{!stopwatchStart ? "Start" : "Stop"}</Text>
+            </TouchableHighlight>
+          </View>
+      </View>
+    </ScrollView>
+    {/* 返回和打开完成任务弹窗按钮 */}
+    <View
       style={[
-        styles.pageView
+        styles.footerView,
+        { height: 65 + (safeArea.bottom || 16), }
       ]}
     >
-      {/* 计时器组件 */}
-      <Stopwatch
-        laps
-        msecs
-        options={options}
-        start={stopwatchStart}
-        reset={stopwatchReset}
-        getTime={getFormattedTime}
-        // getMsecs={value => console.warn(1, value)}
-      />
-      {/* 记时列表 */}
-      <View style={styles.timeList}>
-        <FlatList
-          ref={timeListRef}
-          data={timeList}
-          getItemLayout={(data, index) => (
-            {
-              length: ITEM_HEIGHT,
-              offset: ITEM_HEIGHT * index,
-              index
-            }
-          )}
-          ListEmptyComponent={
-            <View style={{height: ITEMS_HEIGHT, alignItems: 'center', justifyContent: 'center'}}>
-              <Text>点击开始后再次点击生成记录</Text>
-            </View>
-          }
-          renderItem={
-            ({item, index}) =>
-              <View
-                key={`timerItem_${index}`}
-                style={styles.timeItemView}
-              >
-                <Text style={styles.timeItemText}>记录{index}</Text>
-                <View>
-                  <Text style={styles.timeItemText}>开始时间：{formatTime(item.start)}</Text>
-                  <Text style={styles.timeItemText}>结束时间：{formatTime(item.end)}</Text>
-                </View>
-              </View>
-          }
-        />
-      </View>
-      {/* 操作按钮 */}
-      <View style={styles.handleButtons}>
-        <TouchableHighlight
-          underlayColor='#e9e9e9'
-          style={styles.handleButton}
-          onPress={resetStopwatch}>
-          <Text style={styles.handleButtonText}>Reset</Text>
-        </TouchableHighlight>
-        <TouchableHighlight
-          underlayColor='#e9e9e9'
-          style={[
-            styles.handleButton,
-            {
-              backgroundColor: !stopwatchStart
-                ? 'rgba(0, 255, 0, 0.1)'
-                : 'rgba(255, 0, 0, 0.1)'
-            }
-          ]}
-          onPress={toggleStopwatch}>
-          <Text
-            style={[
-              styles.handleButtonText,
-              { color: !stopwatchStart ? '#BCC152' : '#FC6E51' }
-            ]}>{!stopwatchStart ? "Start" : "Stop"}</Text>
-        </TouchableHighlight>
-      </View>
-      {/* 返回和打开完成任务弹窗按钮 */}
-      <View
+      <TouchableOpacity
         style={[
-          styles.footerView,
+          styles.stackNavigatorLeft,
+          { bottom: safeArea.bottom || 16 }
         ]}
+        onPress={goSchedule}
       >
-        <TouchableOpacity
-          style={styles.stackNavigatorLeft}
-          onPress={goSchedule}
-        >
-          <Icon
-            name='arrow-left'
-            color='#999'
-            size={36}
-            style={{backgroundColor: '#fff'}}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.stackNavigatorBottom}
-          onPress={openTaskCompleteModal}
-        >
-          <Icon
-            name='check-circle'
-            color={timeList.length > 0 ? '#F6BB42' : '#999'}
-            size={56}
-            style={{backgroundColor: '#fff', borderRadius: 28, overflow: 'hidden'}}
-          />
-        </TouchableOpacity>
-      </View>
-      {/* 完成任务弹窗 */}
-      <TaskCompleteModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        onConfirm={taskComplete}
-      />
-    </SafeAreaView>
+        <Icon
+          name='arrow-left'
+          color='#999'
+          size={36}
+          style={{backgroundColor: '#fff'}}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.stackNavigatorBottom}
+        onPress={openTaskCompleteModal}
+      >
+        <Icon
+          name='check-circle'
+          color={timeList.length > 0 ? '#F6BB42' : '#999'}
+          size={56}
+          style={{backgroundColor: '#fff', borderRadius: 28, overflow: 'hidden'}}
+        />
+      </TouchableOpacity>
+    </View>
+    {/* 完成任务弹窗 */}
+    <TaskCompleteModal
+      visible={modalVisible}
+      onClose={() => setModalVisible(false)}
+      onConfirm={taskComplete}
+    />
+  </SafeAreaView>
   )
 }
 
@@ -258,7 +267,7 @@ const options = {
 
 const styles = StyleSheet.create({
   pageView: {
-    flex: 1,
+    paddingVertical: 50,
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -303,7 +312,6 @@ const styles = StyleSheet.create({
   },
   footerView: {
     position: 'absolute',
-    height: 115,
     bottom: 0,
     left: 0,
     right: 0,
@@ -319,9 +327,7 @@ const styles = StyleSheet.create({
   },
   stackNavigatorLeft: {
     position: 'absolute',
-    left: 18,
-    top: '50%',
-    transform: [{translateY: -18}],
+    left: 16,
   }
 })
 
