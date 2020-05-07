@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { NavigationContainer } from '@react-navigation/native'
+import { NavigationContainer, NavigationActions } from '@react-navigation/native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { inject, observer } from 'mobx-react'
 import SideMenu from 'react-native-side-menu'
@@ -43,7 +43,7 @@ const App = ({globalStore}) => {
     globalStore.changeUser(null)
     navigationRef.current.reset({
       index: 0,
-      routes: [{ name: 'HomeScreen' }],
+      routes: [{ name: 'BottomTabNavigator' }],
     })
   }
   const onSideMenu = (isOpen) => {
