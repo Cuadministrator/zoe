@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { View, Text, FlatList, Dimensions, TouchableOpacity, StyleSheet } from 'react-native'
+import { inject, observer } from 'mobx-react'
 import dayjs from 'dayjs'
 
 // components
@@ -10,6 +11,7 @@ import { Agenda } from 'react-native-calendars'
 
 // config
 import { taskTypeEnum } from '../../common/config'
+import { getTaskList } from '../../storage/task'
 
 const RenderItem = ({
   label,
@@ -53,7 +55,10 @@ const RenderItem = ({
   )
 }
 
-const ScheduleHome = ({navigation}) => {
+const ScheduleHome = ({
+  navigation,
+  globalStore
+}) => {
   const safeArea = useSafeArea()
   // 选择的时间 默认当天
   const [date, setDate] = useState(dayjs())
@@ -73,18 +78,9 @@ const ScheduleHome = ({navigation}) => {
   }
 
   const getScheduleHomeData = async (date) => {
-    const taskRes = await storage.get('taskList')
-    const taskRecordRes = await storage.get('taskRecordList')
     let result = []
     let dateTime = dayjs(date)
-    if (!(taskRes && taskRecordRes)) return console.warn(taskRes, taskRecordRes)
-    // 任务数据和任务记录数据组合
-    const taskRecordData = taskRecordRes.map(recordItem => {
-      let item = {}
-      const taskItem = taskRes.find(item => item.id === recordItem.taskId)
-      if (taskItem) item = {...recordItem, ...taskItem}
-      return item
-    })
+    const taskRecordData = await getTaskList({userId: globalStore.user && globalStore.user.id})
     // 任务数据记录 和 时间表组合
     for (let i = 0; i <= 24; i++) {
       const hourTime = dateTime.hour(i)
@@ -93,8 +89,14 @@ const ScheduleHome = ({navigation}) => {
       let taskData = []
       taskRecordData.forEach(trItem => {
         if (
-          dayjs(trItem.startTime).isSameOrAfter(startTime) &&
-          dayjs(trItem.endTime).isBefore(endTime) &&
+          (
+            dayjs(trItem.startTime).isSameOrAfter(startTime) &&
+            dayjs(trItem.startTime).isBefore(endTime)
+          ) ||
+          (
+            dayjs(trItem.endTime).isSameOrAfter(startTime) &&
+            dayjs(trItem.endTime).isBefore(endTime)
+          ) &&
           !taskData.find(taskItem => taskItem.taskId === trItem.taskId)
         ) {
           taskData.push(trItem)
@@ -214,4 +216,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default ScheduleHome
+export default inject('globalStore')(observer(ScheduleHome))

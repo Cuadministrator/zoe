@@ -14,8 +14,8 @@ import { Icon } from '../../../components'
 
 // utils
 import { checkDecimal } from '../../../utils/func'
-import storage from 'react-native-simple-store'
 import dayjs from 'dayjs'
+import { getTaskList } from '../../../storage/task'
 
 const screenHeight = Dimensions.get('window').height
 const screenWidth = Dimensions.get('window').width
@@ -27,7 +27,8 @@ const initDate = value => dayjs(value).hour(0).minute(0).second(0).millisecond(0
 const TaskCompleteModal = ({
   visible = true,
   onClose,
-  onConfirm
+  onConfirm,
+  userId
 }) => {
   const ref = useRef(null)
   const [data, setData] = useState([])
@@ -50,7 +51,7 @@ const TaskCompleteModal = ({
   }, [visible])
 
   const initData = async () => {
-    const taskRes = await storage.get('taskList')
+    const taskRes = await getTaskList({userId})
     if (taskRes && taskRes.length > 0) {
       let result = []
       taskRes.forEach(taskItem => {
@@ -166,7 +167,7 @@ const TaskCompleteModal = ({
             }
         </View>
         <View style={styles.modalFooter}>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={{marginRight: 20}}
             onPress={openAdd}
           >
@@ -174,7 +175,7 @@ const TaskCompleteModal = ({
               name='plus-circle'
               size={40}
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <Button
             style={styles.confirmBtn}
             type='primary'

@@ -8,10 +8,17 @@ import { Tip } from 'beeshell'
 
 class Global {
   @observable user = null
+  
+  @observable sideMenuVisible = false
 
   @action
   changeUser (value) {
     this.user = value
+  }
+
+  @action
+  changeSideMenuVisible (value) {
+    this.sideMenuVisible = value
   }
 
   @action

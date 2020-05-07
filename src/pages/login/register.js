@@ -13,32 +13,58 @@ import {
 import { inject, observer } from 'mobx-react'
 
 // components
-import { Input, Button } from 'beeshell'
+import { Input, Button, Tip } from 'beeshell'
 import { Icon } from '../../components'
 
 // utils
 import { getStatusBarHeight } from '../../utils/func'
+import { register } from '../../storage/user'
 
 const { height: W_HEIGHT } = Dimensions.get('window')
 
 const LoginInput = (props) => {
   const [pswMode, setPswMode] = useState(props && props.pswMode)
-  return <Input
-    autoCapitalize='none'
-    secureTextEntry={pswMode === 'password'}
-    style={styles.inputContainerStyle}
-    {...props}
-  />
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderBottomWidth: 1,
+        borderBottomColor: '#e9e9e9',
+      }}
+    >
+      {
+        props.label &&
+        <Text
+          style={{
+            fontSize: 14,
+            color: '#222',
+            marginRight: 20,
+            width: 60
+          }}
+        >{props.label}</Text>
+      }
+      <Input
+        autoCapitalize='none'
+        secureTextEntry={pswMode === 'password'}
+        style={styles.inputContainerStyle}
+        {...props}
+      />
+    </View>
+  )
 }
 
 @inject('globalStore')
 @observer
-class LoginPage extends Component {
+class RegisterPage extends Component {
   state = {
     keyBoardHeight: 0,
     boxHeight: 0,
     account: '',
     psw: '',
+    rewritePsw: '',
+    name: '',
+    email: '',
     pswMode: 'password',
     errMessage: '' // '*对不起，您没有访问权限，请与管理员联系' // '*对不起，您的密码或帐号错误'
   }
@@ -61,26 +87,24 @@ class LoginPage extends Component {
   }
 
   // 点击登陆按钮
-  onPressLogin = async () => {
+  onPressRegister = async () => {
     const { globalStore, navigation } = this.props
-    const { account, psw } = this.state
-    if (!(account && psw)) return
-    await globalStore.login({
-      account, password: psw
+    const { account, psw, rewritePsw, name, email } = this.state
+    if (!(account && psw && rewritePsw && name && email)) return
+    if (psw !== rewritePsw) return Tip.show('两次输入密码不相同!')
+    const res = await register({
+      phone: account,
+      password: psw,
+      name,
+      email
     })
-    if(globalStore.user) {
+    if (res) {
       navigation.reset({
         index: 0,
-        routes: [{ name: 'BottomTabNavigator' }],
+        routes: [{ name: 'LoginScreen' }],
       })
     }
   }
-
-  goRegister = () => {
-    const { navigation } = this.props
-    navigation.push('RegisterScreen')
-  }
-
   // 登陆框上浮
   _keyboardDidShow(e) {
     // 只有第一次才改变
@@ -97,7 +121,7 @@ class LoginPage extends Component {
   }
 
   render() {
-    const { account, psw, errMessage, pswMode, keyBoardHeight, boxHeight } = this.state
+    const { account, psw, name, errMessage, email, rewritePsw, pswMode, keyBoardHeight, boxHeight } = this.state
     const showTag = (W_HEIGHT - keyBoardHeight - getStatusBarHeight(true)) > (boxHeight + 136)
     return (
       <>
@@ -116,7 +140,7 @@ class LoginPage extends Component {
                 <Text
                   style={styles.titleText}
                 >
-                  登录
+                  注册
                 </Text>
               </View>
             }
@@ -125,39 +149,48 @@ class LoginPage extends Component {
               onLayout={event => this.setState({boxHeight: event.nativeEvent.layout.height})}
             >
               <LoginInput
-                keyboardType='email-address'
+                keyboardType='numeric'
+                label='手机号'
                 value={account}
-                placeholder='请输入账号'
+                placeholder='请输入手机号'
                 placeholderTextColor='#999'
                 onChange={account => this.setState({account})} />
               <LoginInput
+                label='密码'
                 value={psw}
                 placeholder='请输入密码'
                 pswMode='password'
                 placeholderTextColor='#999'
                 onChange={psw => this.setState({psw})} />
+              <LoginInput
+                label='密码'
+                value={rewritePsw}
+                placeholder='请再次输入密码'
+                pswMode='password'
+                placeholderTextColor='#999'
+                onChange={rewritePsw => this.setState({rewritePsw})} />
+              <LoginInput
+                label='姓名'
+                value={name}
+                placeholder='请输入姓名'
+                placeholderTextColor='#999'
+                onChange={name => this.setState({name})} />
+              <LoginInput
+                label='电子邮箱'
+                keyboardType='email-address'
+                value={email}
+                placeholder='请输入电子邮箱'
+                placeholderTextColor='#999'
+                onChange={email => this.setState({email})} />
               <Button
                 type='primary'
                 size='md'
-                disabled={!(account && psw)}
+                disabled={!(account && psw && rewritePsw && name && email)}
                 style={styles.btnStyle}
-                onPress={this.onPressLogin}>登录</Button>
+                onPress={this.onPressRegister}>注册</Button>
               {
                 !!errMessage && <Text style={styles.errText}>{errMessage}</Text>
               }
-              <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-                <TouchableOpacity
-                  style={{
-                    paddingVertical: 12,
-                    paddingHorizontal: 16,
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                  onPress={this.goRegister}
-                >
-                  <Text style={{fontSize: 14, color: '#2e82ff'}}>注册</Text>
-                </TouchableOpacity>
-              </View>
             </View>
           </ImageBackground>
         </ScrollView>
@@ -185,14 +218,15 @@ const styles = StyleSheet.create({
   },
   // 登录
   loginBox: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 40,
     paddingVertical: 60,
     backgroundColor: '#fff',
     borderRadius: 14,
     marginHorizontal: 14,
   },
   inputContainerStyle: {
-    height: 44,
+    flex: 1,
+    height: 56,
     borderBottomColor: '#F0F0F0',
   },
   inputIconClose: {
@@ -225,4 +259,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default LoginPage
+export default RegisterPage

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, ScrollView, StyleSheet, FlatList } from 'react-native'
+import { inject, observer } from 'mobx-react'
 
 // components
 import { useSafeArea } from 'react-native-safe-area-context'
@@ -8,11 +9,12 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 
 // utils
 import storage from '../../storage'
+import { getTaskList } from '../../storage/task'
 
 const QuadrantList = ({
   data,
   navigation,
-  initData
+  initData,
 }) => {
   // 跳转任务完成页
   const onQuadrantItemPress = () => {
@@ -49,7 +51,8 @@ const QuadrantList = ({
 }
 
 const QuadrantScreen = ({
-  navigation
+  navigation,
+  globalStore
 }) => {
   const safeArea = useSafeArea()
   // 各个象限的数据存储
@@ -64,7 +67,7 @@ const QuadrantScreen = ({
   }, [])
 
   const initData = async () => {
-    const res = await storage.get('taskList')
+    const res = await getTaskList({userId: globalStore.user && globalStore.user.id})
     if (res && res.length > 0) {
       let iu = []
       let inu = []
@@ -261,4 +264,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default QuadrantScreen
+export default inject('globalStore')(observer(QuadrantScreen))
