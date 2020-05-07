@@ -77,7 +77,7 @@ const SideMenu = ({
           userData &&
           <SideMenuRow
             icon='award'
-            label='我的成就'
+            label='个人统计'
             onPress={goCollect}
           />
         }
