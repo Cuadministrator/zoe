@@ -12,7 +12,6 @@ export const getTaskList = async ({userId}) => {
       // 过滤失效项
       if (taskItem.status !== 3) {
         // 过滤非用户项
-        console.warn(taskItem.userId, userId)
         if (taskItem.userId === userId || !taskItem.userId) {
           result.push(taskItem)
         }

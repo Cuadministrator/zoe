@@ -47,7 +47,6 @@ const App = ({globalStore}) => {
     })
   }
   const onSideMenu = (isOpen) => {
-    console.warn('navigationRef', navigationRef)
     !isOpen && globalStore.changeSideMenuVisible(isOpen)
   }
   return (

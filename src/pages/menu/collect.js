@@ -55,7 +55,11 @@ const CollectScreen = ({
     wordWrapEnabled: true
   })
   const [barData, setBarData] = useState(null)
-  const [weekLineData, setWeekLineData] = useState(null)
+  const [weekLineData, setWeekLineData] = useState({
+    dataSets: [
+      {label: '本周高效工作时间', values: [{x: 0, y: 0}]}
+    ]
+  })
   const [pieData, setPieData] = useState(null)
 
   useEffect(() => {
