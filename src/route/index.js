@@ -8,6 +8,7 @@ import { navigationRef } from './NavigationService'
 
 // screen
 import LoginScreen from '../pages/login'
+import RegisterScreen from '../pages/login/register'
 import ScheduleStopWatchScreen from '../pages/schedule/watch'
 import HelpScreen from '../pages/menu/help'
 import CollectScreen from '../pages/menu/collect'
@@ -29,6 +30,8 @@ const Router = () => {
     >
       {/* 登陆页 */}
       <Stack.Screen name="LoginScreen" component={LoginScreen} />
+      {/* 注册 */}
+      <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
       {/* 使用帮助 */}
       <Stack.Screen
         name="HelpScreen"

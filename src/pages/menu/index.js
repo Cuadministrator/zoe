@@ -28,7 +28,8 @@ const SideMenuRow = ({
 
 const SideMenu = ({
   userData,
-  navigate
+  navigate,
+  loginOut
 }) => {
   const safeArea = useSafeArea()
   const goLogin = () => {
@@ -86,6 +87,17 @@ const SideMenu = ({
           onPress={goHelp}
         />
       </View>
+      {
+        userData && 
+        <View style={styles.footerView}>
+          <TouchableOpacity
+            style={styles.loginOutView}
+            onPress={loginOut}
+          >
+            <Text style={styles.loginOutText}>登出</Text>
+          </TouchableOpacity>
+        </View>
+      }
     </View>
   )
 }
@@ -128,7 +140,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#e9e9e9'
   },
   sideMenuRows: {
-    width: '100%'
+    width: '100%',
+    flex: 1
   },
   sideMenuRow: {
     width: '100%',
@@ -147,5 +160,21 @@ const styles = StyleSheet.create({
   sideMenuRowText: {
     fontSize: 16,
     color: '#ccd1d9',
+  },
+  footerView: {
+    width: '100%',
+    paddingHorizontal: 30,
+    paddingBottom: 16,
+  },
+  loginOutView: {
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#fff',
+    borderRadius: 4
+  },
+  loginOutText: {
+    fontSize: 16,
+    color: 'red'
   }
 })

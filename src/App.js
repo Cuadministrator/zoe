@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useRef } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { inject, observer } from 'mobx-react'
@@ -39,6 +39,17 @@ const App = ({globalStore}) => {
     globalStore.changeSideMenuVisible(false)
     navigationRef.current.navigate(screen)
   }
+  const loginOut = () => {
+    globalStore.changeUser(null)
+    navigationRef.current.reset({
+      index: 0,
+      routes: [{ name: 'HomeScreen' }],
+    })
+  }
+  const onSideMenu = (isOpen) => {
+    console.warn('navigationRef', navigationRef)
+    !isOpen && globalStore.changeSideMenuVisible(isOpen)
+  }
   return (
     // 安全区域
     <SafeAreaProvider>
@@ -46,12 +57,13 @@ const App = ({globalStore}) => {
       <SideMenu
         autoClosing
         isOpen={globalStore.sideMenuVisible}
-        onChange={isOpen => !isOpen && globalStore.changeSideMenuVisible(isOpen)}
+        onChange={onSideMenu}
         menu={
           // 侧边栏菜单
           <Menu
             userData={globalStore.user}
             navigate={navigate}
+            loginOut={loginOut}
           />
         }
       >

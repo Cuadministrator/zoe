@@ -27,6 +27,7 @@
     "react": "16.9.0",
     "react-native": "0.61.3",
     "react-native-calendars": "https://github.com/Cuadministrator/react-native-calendars.git#v1.20.1",
+    "react-native-charts-wrapper": "^0.5.7",
     "react-native-drag-sort": "^2.1.1",
     "react-native-gesture-handler": "^1.6.0",
     "react-native-paper": "^3.6.0",
@@ -42,7 +43,7 @@
   "devDependencies": {
     "@babel/core": "^7.6.4",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-    "@babel/runtime": "^7.6.3",
+    "@babel/runtime": "^7.9.6",
     "babel-jest": "^24.9.0",
     "eslint": "^6.8.0",
     "jest": "^24.9.0",

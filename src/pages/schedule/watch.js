@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { View, Text, TouchableHighlight, StyleSheet, TouchableOpacity, FlatList, ScrollView, Dimensions } from 'react-native'
 import { SafeAreaView, useSafeArea } from 'react-native-safe-area-context'
+import { inject, observer } from 'mobx-react'
 import dayjs from 'dayjs'
 import storage from 'react-native-simple-store'
 
@@ -15,7 +16,8 @@ const ITEMS_HEIGHT = 150
 
 const ScheduleWatch = ({
   route,
-  navigation
+  navigation,
+  globalStore
 }) => {
   const safeArea = useSafeArea()
   // ref
@@ -238,6 +240,7 @@ const ScheduleWatch = ({
     </View>
     {/* 完成任务弹窗 */}
     <TaskCompleteModal
+      userId={globalStore.user && globalStore.user.id}
       visible={modalVisible}
       onClose={() => setModalVisible(false)}
       onConfirm={taskComplete}
@@ -331,4 +334,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default ScheduleWatch
+export default inject('globalStore')(observer(ScheduleWatch))

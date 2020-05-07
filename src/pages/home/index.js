@@ -85,7 +85,7 @@ const HomeScreen = ({globalStore}) => {
 
   // 添加回调函数
   const _onModalAdd = async (params) => {
-    if (globalStore.user) {
+    if (globalStore.user && globalStore.user.id) {
       params.userId = globalStore.user.id
     }
     const res = await addTask(params)
@@ -108,15 +108,19 @@ const HomeScreen = ({globalStore}) => {
       }}
     >
       {
-        data && data.length > 0 &&
-        <List
-          data={data}
-          style={{flex: 1}}
-          onDataChange={_onDataChange}
-          onItemEdit={_onItemEdit}
-          onItemDelete={_onItemDelete}
-          onItemComplete={_onItemComplete}
-        />
+        data && data.length > 0
+          ? <List
+            data={data}
+            style={{flex: 1}}
+            onDataChange={_onDataChange}
+            onItemEdit={_onItemEdit}
+            onItemDelete={_onItemDelete}
+            onItemComplete={_onItemComplete}
+          />
+          : <View style={styles.tagView}>
+            <Text style={styles.tagText}>请在此处添加新的任务</Text>
+            <View style={styles.tagIcon} />
+          </View>
       }
       <View
         style={styles.footerView}
@@ -166,6 +170,36 @@ const styles = StyleSheet.create({
     transform: [{translateX: -28}],
     backgroundColor: '#f0f0f0',
     borderRadius: 30,
+  },
+  tagView: {
+    width: 160,
+    paddingVertical: 12,
+    position: 'absolute',
+    bottom: 68,
+    left: '50%',
+    transform: [{translateX: -80}],
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    zIndex: 999
+  },
+  tagText: {
+    fontSize: 14,
+    color: '#F6BB42'
+  },
+  tagIcon: {
+    position: 'absolute',
+    bottom: -8,
+    left: '50%',
+    transform: [{translateX: -4}],
+    width: 0,
+    height: 0,
+    borderTopWidth: 8,
+    borderTopColor: '#fff',
+    borderRightColor: 'transparent',
+    borderRightWidth: 8,
+    borderLeftColor: 'transparent',
+    borderLeftWidth: 8
   }
 })
 

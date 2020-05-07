@@ -2,6 +2,7 @@ import storage from './index' // https://github.com/jasonmerino/react-native-sim
 import dayjs from 'dayjs'
 
 const STORAGE_KEY = 'taskList'
+const STORAGE_RECORD_KEY = 'taskRecordList'
 
 export const getTaskList = async ({userId}) => {
   let result = []
@@ -11,9 +12,29 @@ export const getTaskList = async ({userId}) => {
       // 过滤失效项
       if (taskItem.status !== 3) {
         // 过滤非用户项
-        if (taskItem.userId === userId || !userId) {
+        console.warn(taskItem.userId, userId)
+        if (taskItem.userId === userId || !taskItem.userId) {
           result.push(taskItem)
         }
+      }
+    })
+  }
+  result.sort((pre, next) => pre.status - next.status)
+  return result
+}
+
+export const getTaskRecordList = async({userId}) => {
+  let result = []
+  const taskRes = await getTaskList({userId})
+  const taskRecordRes = await storage.get(STORAGE_RECORD_KEY)
+  if (
+    taskRes && taskRes.length > 0 &&
+    taskRecordRes && taskRecordRes.length > 0
+  ) {
+    taskRecordRes.forEach(trItem => {
+      const taskItem = taskRes.find(tItem => tItem.id === trItem.taskId)
+      if (taskItem) {
+        result.push(trItem)
       }
     })
   }

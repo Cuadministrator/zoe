@@ -32,6 +32,7 @@
 		464AF4922451F166007E22C0 /* IQUIView+Hierarchy.m in Sources */ = {isa = PBXBuildFile; fileRef = 464AF47E2451F166007E22C0 /* IQUIView+Hierarchy.m */; };
 		464AF4932451F166007E22C0 /* IQUIViewController+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 464AF4832451F166007E22C0 /* IQUIViewController+Additions.m */; };
 		464AF4942451F166007E22C0 /* IQKeyboardReturnKeyHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 464AF4852451F166007E22C0 /* IQKeyboardReturnKeyHandler.m */; };
+		46D841452463C49800BAC5E0 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46D841442463C49800BAC5E0 /* File.swift */; };
 		8BD98F53C77B492F58DAA3C5 /* libPods-zoe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA7CF1EE2A23A5FC3F12E272 /* libPods-zoe.a */; };
 		A7BB225E53C33415914C155B /* libPods-zoeTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A807F3F58DAB01653E447A0 /* libPods-zoeTests.a */; };
 		E531A581D76550BD27ED13BC /* libPods-zoe-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1052A21EE66CDDD7543E269C /* libPods-zoe-tvOSTests.a */; };
@@ -103,6 +104,8 @@
 		464AF4832451F166007E22C0 /* IQUIViewController+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "IQUIViewController+Additions.m"; sourceTree = "<group>"; };
 		464AF4842451F166007E22C0 /* IQUIView+Hierarchy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "IQUIView+Hierarchy.h"; sourceTree = "<group>"; };
 		464AF4852451F166007E22C0 /* IQKeyboardReturnKeyHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQKeyboardReturnKeyHandler.m; sourceTree = "<group>"; };
+		46D841412463C3F400BAC5E0 /* zoe-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "zoe-Bridging-Header.h"; sourceTree = "<group>"; };
+		46D841442463C49800BAC5E0 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		629BBEEE021BF2E7B5D34975 /* Pods-zoe-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zoe-tvOS.release.xcconfig"; path = "Target Support Files/Pods-zoe-tvOS/Pods-zoe-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		6CFB7BB8419107A338FCA7B3 /* Pods-zoe-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zoe-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-zoe-tvOS/Pods-zoe-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		7807719808E2BEEAE1EDEBA4 /* Pods-zoe-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zoe-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-zoe-tvOSTests/Pods-zoe-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -286,6 +289,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				46D841442463C49800BAC5E0 /* File.swift */,
 				464AF4602451F166007E22C0 /* IQKeyboardManager */,
 				13B07FAE1A68108700A75B9A /* zoe */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -293,6 +297,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				FABED8F428766C40CD89A6AF /* Pods */,
+				46D841412463C3F400BAC5E0 /* zoe-Bridging-Header.h */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -419,6 +424,9 @@
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
+					};
+					13B07F861A680F5B00A75B9A = {
+						LastSwiftMigration = 1130;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -713,6 +721,7 @@
 				464AF4902451F166007E22C0 /* IQUITextFieldView+Additions.m in Sources */,
 				464AF4942451F166007E22C0 /* IQKeyboardReturnKeyHandler.m in Sources */,
 				464AF4912451F166007E22C0 /* IQUIScrollView+Additions.m in Sources */,
+				46D841452463C49800BAC5E0 /* File.swift in Sources */,
 				464AF4892451F166007E22C0 /* IQBarButtonItem.m in Sources */,
 				464AF48A2451F166007E22C0 /* IQUIView+IQKeyboardToolbar.m in Sources */,
 				464AF4862451F166007E22C0 /* IQTextView.m in Sources */,
@@ -770,6 +779,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B57021609D3FC0691185B3E6 /* Pods-zoeTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -793,6 +803,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FB97288315560C42FB49B736 /* Pods-zoeTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = zoeTests/Info.plist;
@@ -814,6 +825,7 @@
 			baseConfigurationReference = A55445CFB45E8EA1DEB93BBA /* Pods-zoe.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				INFOPLIST_FILE = zoe/Info.plist;
@@ -825,6 +837,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = zoe;
+				SWIFT_OBJC_BRIDGING_HEADER = "zoe-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -834,6 +849,7 @@
 			baseConfigurationReference = A9B130B60566B3C67A913E38 /* Pods-zoe.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = zoe/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -844,6 +860,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = zoe;
+				SWIFT_OBJC_BRIDGING_HEADER = "zoe-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

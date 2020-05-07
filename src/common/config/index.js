@@ -1,9 +1,9 @@
 // 任务类型枚举
 export const taskTypeEnum = [
-  {id: 1, value: 1, label: '!!!!', placeholder: '重要且紧急（尽快做）', color: '#FC6E51', backgroundColor: 'rgba(255, 0, 0, 0.1)'},
-  {id: 2, value: 2, label: '!!!', placeholder: '重要但不紧急（计划时间做）', color: '#F6BB42', backgroundColor: 'rgba(255, 255, 0, 0.1)'},
-  {id: 3, value: 3, label: '!!', placeholder: '不重要但紧急（授权别人做）', color: '#00bfff', backgroundColor: 'rgba(30, 144, 255, 0.1)'},
-  {id: 4, value: 4, label: '!', placeholder: '不重要且不紧急（有时间再做）', color: '#BCC152', backgroundColor: 'rgba(0, 255, 0, 0.1)'}
+  {id: 1, value: 1, label: '!!!!', name: '重要且紧急', placeholder: '重要且紧急（尽快做）', color: '#FC6E51', backgroundColor: 'rgba(255, 0, 0, 0.1)'},
+  {id: 2, value: 2, label: '!!!', name: '重要但不紧急', placeholder: '重要但不紧急（计划时间做）', color: '#F6BB42', backgroundColor: 'rgba(255, 255, 0, 0.1)'},
+  {id: 3, value: 3, label: '!!', name: '不重要但紧急', placeholder: '不重要但紧急（授权别人做）', color: '#00bfff', backgroundColor: 'rgba(30, 144, 255, 0.1)'},
+  {id: 4, value: 4, label: '!', name: '不重要且不紧急', placeholder: '不重要且不紧急（有时间再做）', color: '#BCC152', backgroundColor: 'rgba(0, 255, 0, 0.1)'}
 ]
 
 // 重复类型枚举
