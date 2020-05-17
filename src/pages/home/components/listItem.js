@@ -25,8 +25,8 @@ const Item = ({
   ...resetProps
 }) => {
   const _onLeftAction = useCallback(() => {
-    onLeftAction && typeof onLeftAction === 'function' && onLeftAction(id, index)
-  }, [id, index])
+    onLeftAction && typeof onLeftAction === 'function' && onLeftAction(id, index, finished)
+  }, [id, index, finished])
 
   const _onRightDelete = useCallback(() => {
     onRightDelete && typeof onRightDelete === 'function' && onRightDelete(id, index)
@@ -121,8 +121,8 @@ const List = ({
   }
 
   // 完成
-  const _finished = (id, index) => {
-    onItemComplete && typeof onItemComplete === 'function' && onItemComplete(id, index)
+  const _finished = (id, index, finished) => {
+    onItemComplete && typeof onItemComplete === 'function' && onItemComplete(id, index, finished)
   }
 
   // 排序

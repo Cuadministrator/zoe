@@ -85,8 +85,12 @@ const ScheduleHome = ({
   }
 
   const getScheduleHomeData = async (date) => {
-    const taskRes = await getTaskList({userId: globalStore.user && globalStore.user.id}) // storage.get('taskList')
-    const taskRecordRes = await storage.get('taskRecordList')
+    let params = {}
+    if (globalStore.user && globalStore.user.id) {
+      params.userId = globalStore.user.id
+    }
+    const taskRes = await getTaskList(params)
+    const taskRecordRes = await getTaskRecordList(params)
     let result = []
     let dateTime = dayjs(date)
     if (!(taskRes && taskRecordRes)) return console.warn(taskRes, taskRecordRes)

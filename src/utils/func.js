@@ -26,7 +26,7 @@ const getStatusBarHeight = (skipAndroid) => {
 
 const checkDecimal = value => {
   if (!isNaN(value)) {
-    const reg = /^[0-9]{1}\.\d+$/
+    const reg = /^\d+\.\d+$/
     return reg.test(value)
   }
   return false

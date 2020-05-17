@@ -9,7 +9,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 
 // utils
 import storage from '../../storage'
-import { getTaskList } from '../../storage/task'
+import { getTodayTaskList } from '../../storage/task'
 
 const QuadrantList = ({
   data,
@@ -69,28 +69,25 @@ const QuadrantScreen = ({
   }, [navigation])
 
   const initData = async () => {
-    const res = await getTaskList({userId: globalStore.user && globalStore.user.id})
+    let params = {}
+    if (globalStore.user && globalStore.user.id) {
+      params.userId = globalStore.user.id
+    }
+    const res = await getTodayTaskList(params)
     if (res && res.length > 0) {
       let iu = []
       let inu = []
       let niu = []
       let nInu = []
       res.forEach((resItem, resIndex) => {
-        resItem = {
-          ...resItem,
-          label: resItem.name,
-          finished: resItem.status === 2
-        }
-        if (resItem.status !== 3) { // 非失效任务
-          if (resItem.taskType === 1) { // 一象限
-            iu.push(resItem)
-          } else if (resItem.taskType === 2) { // 二象限
-            inu.push(resItem)
-          } else if (resItem.taskType === 3) { // 三象限
-            niu.push(resItem)
-          } else if (resItem.taskType === 4) { // 四象限
-            nInu.push(resItem)
-          }
+        if (resItem.taskType === 1) { // 一象限
+          iu.push(resItem)
+        } else if (resItem.taskType === 2) { // 二象限
+          inu.push(resItem)
+        } else if (resItem.taskType === 3) { // 三象限
+          niu.push(resItem)
+        } else if (resItem.taskType === 4) { // 四象限
+          nInu.push(resItem)
         }
       })
       // 设置数据

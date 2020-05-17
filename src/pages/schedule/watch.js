@@ -90,33 +90,18 @@ const ScheduleWatch = ({
     // timeList taskList
     // 刷新上一个页面
     const { refresh } = route.params
-    const taskRecordRes = await storage.get('taskRecordList')
-    let index = taskRecordRes && taskRecordRes.length > 0
-      ? taskRecordRes.length + 1
-      : 1
-    let result = []
-    // 生成完成任务的记录
-    taskList.forEach((taskItem, taskIndex) => {
-      timeList.forEach((timeItem, timeIndex) => {
-        result.push({
-          id: index++,
-          taskId: taskItem.id,
-          startTime: formatTime(timeItem.start),
-          endTime: formatTime(timeItem.endTime)
-        })
-      })
-      completeTask({id: taskItem.id})
-    })
-    if (taskRecordRes && taskRecordRes.length > 0) {
-      result = [...taskRecordRes, ...result]
+    const taskIdList = taskList.map(taskItem => taskItem.id)
+    const res = await completeTask({taskIdList, timeList})
+    if (res) {
+      // 重置时间表
+      resetStopwatch()
+      // 刷新上一个页面
+      refresh && typeof refresh === 'function' && refresh()
+      // 返回上一个页面
+      navigation.goBack()
+    } else {
+      Tip.show('数据异常!')
     }
-    storage.save('taskRecordList', result)
-    // 重置时间表
-    resetStopwatch()
-    // 刷新上一个页面
-    refresh && typeof refresh === 'function' && refresh()
-    // 返回上一个页面
-    navigation.goBack()
   }
 
   // 添加回调函数

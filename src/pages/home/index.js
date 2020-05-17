@@ -3,13 +3,14 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { useSafeArea } from 'react-native-safe-area-context'
 import { inject, observer } from 'mobx-react'
 import storage from '../../storage'
+import dayjs from 'dayjs'
 
 // component
 import List from './components/listItem'
 import { ModalEdit, Icon } from '../../components'
 
 // storage
-import { getTaskList, editTask, completeTask, deleteTask, addTask } from '../../storage/task'
+import { restoreTask, editTask, completeTask, deleteTask, addTask, getTodayTaskList } from '../../storage/task'
 
 const HomeScreen = ({navigation, globalStore}) => {
   const safeArea = useSafeArea()
@@ -33,18 +34,9 @@ const HomeScreen = ({navigation, globalStore}) => {
     if (globalStore.user && globalStore.user.id) {
       params.userId = globalStore.user.id
     }
-    const res = await getTaskList(params)
+    const res = await getTodayTaskList(params)
     if (res && res.length > 0) {
-      let result = []
-      res.forEach(resItem => {
-        resItem = {
-          ...resItem,
-          label: resItem.name,
-          finished: resItem.status === 2
-        }
-        result.push(resItem)
-      })
-      setData(result)
+      setData(res)
     }
   }
 
@@ -68,9 +60,16 @@ const HomeScreen = ({navigation, globalStore}) => {
   }
 
   // 完成回调函数
-  const _onItemComplete = async (id, index) => {
-    const res = await completeTask({id})
-    res && initData()
+  const _onItemComplete = async (id, index, finished) => {
+    let res = null
+    if (finished) {
+      res = await restoreTask({id})
+    } else {
+      const taskIdList = [id]
+      const timeList = [{startTime: dayjs(), endTime: dayjs()}]
+      res = await completeTask({taskIdList, timeList})
+    }
+    initData()
   }
 
   // 排序回调函数
