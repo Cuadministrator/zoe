@@ -7,9 +7,12 @@ import storage from 'react-native-simple-store'
 
 // components
 import { Stopwatch } from 'react-native-stopwatch-timer'
-import { Icon } from '../../components'
+import { Icon, ModalEdit } from '../../components'
 import TaskCompleteModal from './components/TaskCompleteModal'
 import { Tip } from 'beeshell'
+
+// api
+import { addTask, completeTask } from '../../storage/task'
 
 const ITEM_HEIGHT = 50
 const ITEMS_HEIGHT = 150
@@ -34,6 +37,8 @@ const ScheduleWatch = ({
   const [stopwatchReset, setStopwatchReset] = useState(false)
   // 显示弹窗
   const [modalVisible, setModalVisible] = useState(false)
+  // 显示添加任务弹窗
+  const [modalAddVisible, setModalAddVisible] = useState(false)
 
   // 根据是否开始记时来存储时间记录
   useEffect(() => {
@@ -85,32 +90,29 @@ const ScheduleWatch = ({
     // timeList taskList
     // 刷新上一个页面
     const { refresh } = route.params
-    const taskRecordRes = await storage.get('taskRecordList')
-    let index = taskRecordRes && taskRecordRes.length > 0
-      ? taskRecordRes.length + 1
-      : 1
-    let result = []
-    // 生成完成任务的记录
-    timeList.forEach((timeItem, timeIndex) => {
-      taskList.forEach((taskItem, taskIndex) => {
-        result.push({
-          id: index++,
-          taskId: taskItem.id,
-          startTime: formatTime(timeItem.start),
-          endTime: formatTime(timeItem.endTime)
-        })
-      })
-    })
-    if (taskRecordRes && taskRecordRes.length > 0) {
-      result = [...taskRecordRes, ...result]
+    const taskIdList = taskList.map(taskItem => taskItem.id)
+    const res = await completeTask({taskIdList, timeList})
+    if (res) {
+      // 重置时间表
+      resetStopwatch()
+      // 刷新上一个页面
+      refresh && typeof refresh === 'function' && refresh()
+      // 返回上一个页面
+      navigation.goBack()
+    } else {
+      Tip.show('数据异常!')
     }
-    storage.save('taskRecordList', result)
-    // 重置时间表
-    resetStopwatch()
-    // 刷新上一个页面
-    refresh && typeof refresh === 'function' && refresh()
-    // 返回上一个页面
-    navigation.goBack()
+  }
+
+  // 添加回调函数
+  const _onModalAdd = async (params) => {
+    if (globalStore.user && globalStore.user.id) {
+      params.userId = globalStore.user.id
+    }
+    const res = await addTask(params)
+    if (res) {
+      setModalVisible(true)
+    }
   }
 
   // 返回上一个页面
@@ -122,6 +124,14 @@ const ScheduleWatch = ({
   const openTaskCompleteModal = () => {
     if (!(timeList && timeList.length > 0)) return Tip.show('请先生成记录后再完成任务！')
     setModalVisible(true)
+  }
+
+  // 关闭任务弹窗 打开任务添加弹窗
+  const closeTaskCompleteModal = (type) => {
+    setModalVisible(false)
+    if (type === 'openAdd') {
+      setModalAddVisible(true)
+    }
   }
 
   // 格式化时间数据
@@ -242,8 +252,13 @@ const ScheduleWatch = ({
     <TaskCompleteModal
       userId={globalStore.user && globalStore.user.id}
       visible={modalVisible}
-      onClose={() => setModalVisible(false)}
+      onClose={closeTaskCompleteModal}
       onConfirm={taskComplete}
+    />
+    <ModalEdit
+      visible={modalAddVisible}
+      onModalAdd={_onModalAdd}
+      onClose={() => setModalAddVisible(false)}
     />
   </SafeAreaView>
   )

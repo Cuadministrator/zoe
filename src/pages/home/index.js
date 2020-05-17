@@ -3,15 +3,16 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { useSafeArea } from 'react-native-safe-area-context'
 import { inject, observer } from 'mobx-react'
 import storage from '../../storage'
+import dayjs from 'dayjs'
 
 // component
 import List from './components/listItem'
 import { ModalEdit, Icon } from '../../components'
 
 // storage
-import { getTaskList, editTask, completeTask, deleteTask, addTask } from '../../storage/task'
+import { restoreTask, editTask, completeTask, deleteTask, addTask, getTodayTaskList } from '../../storage/task'
 
-const HomeScreen = ({globalStore}) => {
+const HomeScreen = ({navigation, globalStore}) => {
   const safeArea = useSafeArea()
   // 列表数据
   const [data, setData] = useState([])
@@ -22,25 +23,20 @@ const HomeScreen = ({globalStore}) => {
   // 是否显示弹窗
   const [visible, setVisible] = useState(false)
 
-  useEffect(() => { initData() }, [])
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      initData()
+    })
+  }, [navigation])
 
   const initData = async () => {
     let params = {}
     if (globalStore.user && globalStore.user.id) {
       params.userId = globalStore.user.id
     }
-    const res = await getTaskList(params)
+    const res = await getTodayTaskList(params)
     if (res && res.length > 0) {
-      let result = []
-      res.forEach(resItem => {
-        resItem = {
-          ...resItem,
-          label: resItem.name,
-          finished: resItem.status === 2
-        }
-        result.push(resItem)
-      })
-      setData(result)
+      setData(res)
     }
   }
 
@@ -64,9 +60,16 @@ const HomeScreen = ({globalStore}) => {
   }
 
   // 完成回调函数
-  const _onItemComplete = async (id, index) => {
-    const res = await completeTask({id})
-    res && initData()
+  const _onItemComplete = async (id, index, finished) => {
+    let res = null
+    if (finished) {
+      res = await restoreTask({id})
+    } else {
+      const taskIdList = [id]
+      const timeList = [{startTime: dayjs(), endTime: dayjs()}]
+      res = await completeTask({taskIdList, timeList})
+    }
+    initData()
   }
 
   // 排序回调函数

@@ -11,7 +11,7 @@ import { Agenda } from 'react-native-calendars'
 
 // config
 import { taskTypeEnum } from '../../common/config'
-import { getTaskList } from '../../storage/task'
+import { getTaskRecordList, getTaskList } from '../../storage/task'
 
 const RenderItem = ({
   label,
@@ -27,6 +27,7 @@ const RenderItem = ({
           taskData && taskData.length > 0 &&
           taskData.map((taskItem, taskIndex) => {
             const taskTypeItem = taskTypeEnum.find(item => item.id === taskItem.taskType)
+            if (!taskTypeItem) return null
             return (
               <View
                 key={`taskItem_${taskIndex}`}
@@ -70,6 +71,12 @@ const ScheduleHome = ({
     initData()
   }, [date])
 
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      initData()
+    })
+  }, [navigation])
+
   const initData = async () => {
     const res = await getScheduleHomeData(date)
     if (res) {
@@ -78,9 +85,22 @@ const ScheduleHome = ({
   }
 
   const getScheduleHomeData = async (date) => {
+    let params = {}
+    if (globalStore.user && globalStore.user.id) {
+      params.userId = globalStore.user.id
+    }
+    const taskRes = await getTaskList(params)
+    const taskRecordRes = await getTaskRecordList(params)
     let result = []
     let dateTime = dayjs(date)
-    const taskRecordData = await getTaskList({userId: globalStore.user && globalStore.user.id})
+    if (!(taskRes && taskRecordRes)) return console.warn(taskRes, taskRecordRes)
+    // 任务数据和任务记录数据组合
+    const taskRecordData = taskRecordRes.map(recordItem => {
+      let item = {}
+      const taskItem = taskRes.find(item => item.id === recordItem.taskId)
+      if (taskItem) item = {...recordItem, ...taskItem}
+      return item
+    })
     // 任务数据记录 和 时间表组合
     for (let i = 0; i <= 24; i++) {
       const hourTime = dateTime.hour(i)
@@ -90,12 +110,18 @@ const ScheduleHome = ({
       taskRecordData.forEach(trItem => {
         if (
           (
-            dayjs(trItem.startTime).isSameOrAfter(startTime) &&
-            dayjs(trItem.startTime).isBefore(endTime)
-          ) ||
-          (
-            dayjs(trItem.endTime).isSameOrAfter(startTime) &&
-            dayjs(trItem.endTime).isBefore(endTime)
+            (
+              dayjs(trItem.startTime).isSameOrAfter(startTime) &&
+              dayjs(trItem.startTime).isBefore(endTime)
+            ) ||
+            (
+              dayjs(trItem.endTime).isSameOrAfter(startTime) &&
+              dayjs(trItem.endTime).isBefore(endTime)
+            ) ||
+            (
+              dayjs(startTime).isSameOrAfter(trItem.endTime) &&
+              dayjs(endTime).isBefore(trItem.startTime)
+            )
           ) &&
           !taskData.find(taskItem => taskItem.taskId === trItem.taskId)
         ) {

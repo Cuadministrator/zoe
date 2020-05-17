@@ -42,6 +42,7 @@ const TaskCompleteModal = ({
     if (!(ref && ref.current)) return
     if (visible) {
       ref.current.open()
+      initData()
     } else {
       ref.current.close()
     }
@@ -57,7 +58,7 @@ const TaskCompleteModal = ({
       taskRes.forEach(taskItem => {
         const dateTime = taskItem.dateTime
         // 去除 过期任务
-        if (taskItem.status === 3) return
+        if (taskItem.status === 3 || taskItem.status === 2) return
         if (taskItem.repeatType === 1) { // 不重复任务
           if (
             formatDate(dateTime) === formatDate(dayjs())
@@ -99,19 +100,23 @@ const TaskCompleteModal = ({
   }
 
   const _onConfirm = () => {
-    if (!(value && value.length > 0)) return Tip.show('请选择需要完成的任务!')
-    onConfirm && typeof onConfirm === 'function' && onConfirm(value)
-    closeModal()
+    if (data && data.length > 0) {
+      if (!(value && value.length > 0)) return Tip.show('请选择需要完成的任务!')
+      onConfirm && typeof onConfirm === 'function' && onConfirm(value)
+      closeModal()
+    } else {
+      closeModal('openAdd')
+    }
   }
 
   const onCheckBoxChange = value => {
     setValue(value)
   }
 
-  const closeModal = () => {
+  const closeModal = (type) => {
     if (ref && ref.current) {
       ref.current.close()
-      onClose && typeof onClose === 'function' && onClose()
+      onClose && typeof onClose === 'function' && onClose(type)
     }
   }
 
@@ -182,7 +187,7 @@ const TaskCompleteModal = ({
             size='md'
             textColorInverse
             onPress={_onConfirm}
-          >完成</Button>
+          >{data && data.length ? '完成' : '添加'}</Button>
         </View>
         <TouchableOpacity
           style={styles.modalIconClose}
