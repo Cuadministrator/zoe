@@ -63,8 +63,10 @@ const QuadrantScreen = ({
 
   // 初始化数据
   useEffect(() => {
-    initData()
-  }, [])
+    navigation.addListener('focus', () => {
+      initData()
+    })
+  }, [navigation])
 
   const initData = async () => {
     const res = await getTaskList({userId: globalStore.user && globalStore.user.id})

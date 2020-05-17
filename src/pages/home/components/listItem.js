@@ -82,6 +82,7 @@ const Item = ({
             name={finished ? 'check-square' : 'square'}
             size={16}
             color={finished ? '#999' : '#222'}
+            onPress={_onLeftAction}
           />
           <Text
             style={[

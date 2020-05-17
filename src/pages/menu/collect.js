@@ -68,6 +68,7 @@ const CollectScreen = ({
 
   const initData = async () => {
     const taskRes = await getTaskList({userId: globalStore.user && globalStore.user.id})
+    // 饼状图
     if (taskRes && taskRes.length > 0) {
       let done = 0
       let expired = 0
@@ -78,9 +79,9 @@ const CollectScreen = ({
       taskRes.forEach(trItem => {
         // 任务统计
         if (trItem.status === 1) {
-          done++
-        } else if (trItem.status === 2) {
           expired++
+        } else if (trItem.status === 2) {
+          done++
         }
         // 四象限
         if (trItem.taskType === 1) {
@@ -112,6 +113,7 @@ const CollectScreen = ({
       setExpired(expired)
       setPieData(pieData)
     }
+    // 本周成就图
     const taskRecordRes = await getTaskRecordList({userId: globalStore.user && globalStore.user.id})
     if (taskRecordRes && taskRecordRes.length > 0) {
       let now = dayjs()
@@ -119,7 +121,7 @@ const CollectScreen = ({
       taskRecordRes.forEach(trItem => {
         weekData = weekData.map((wdItem, wdIndex) => {
           let count = 0
-          const date = now.day(wdIndex + 1)
+          const date = now.day(wdIndex - 6)
           const startTime = date.hour(0).minute(0).second(0)
           const endTime = date.hour(23).minute(59).second(59)
           if (
@@ -164,7 +166,7 @@ const CollectScreen = ({
       </View>
       <View style={styles.chartView}>
         <View style={styles.finishView}>
-          <Text style={styles.finishText}>完成率: 60%</Text>
+        <Text style={styles.finishText}>完成率: {done / total * 100}%</Text>
         </View>
         <View style={styles.headerView}>
           <View style={styles.headerItem}>

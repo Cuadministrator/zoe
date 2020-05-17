@@ -11,7 +11,7 @@ import { ModalEdit, Icon } from '../../components'
 // storage
 import { getTaskList, editTask, completeTask, deleteTask, addTask } from '../../storage/task'
 
-const HomeScreen = ({globalStore}) => {
+const HomeScreen = ({navigation, globalStore}) => {
   const safeArea = useSafeArea()
   // 列表数据
   const [data, setData] = useState([])
@@ -22,7 +22,11 @@ const HomeScreen = ({globalStore}) => {
   // 是否显示弹窗
   const [visible, setVisible] = useState(false)
 
-  useEffect(() => { initData() }, [])
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      initData()
+    })
+  }, [navigation])
 
   const initData = async () => {
     let params = {}
