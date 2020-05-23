@@ -186,7 +186,9 @@ const ModalEdit = ({
   // ref
   const refModal = useRef(null)
   // 重要程度类型
-  const [important, setImportant] = useState(taskTypeEnum[0].id)
+  const [important, setImportant] = useState(
+    editable ? defaultData.taskType : taskTypeEnum[0].id
+  )
   // 标签输入栏
   const [tagInputValue, setTagInputValue] = useState('')
   // 标签输入栏是否显示

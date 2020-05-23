@@ -8,7 +8,7 @@ import dayjs from 'dayjs'
 import { LineChart, PieChart, BarChart } from 'react-native-charts-wrapper'
 
 // storage
-import { getTaskList, getTaskRecordList } from '../../storage/task'
+import { getTodayTaskList, getTaskRecordList } from '../../storage/task'
 import { taskTypeEnum } from '../../common/config'
 
 const pieDefaultConfig = {
@@ -67,7 +67,7 @@ const CollectScreen = ({
   }, [])
 
   const initData = async () => {
-    const taskRes = await getTaskList({userId: globalStore.user && globalStore.user.id})
+    const taskRes = await getTodayTaskList({userId: globalStore.user && globalStore.user.id})
     // 饼状图
     if (taskRes && taskRes.length > 0) {
       let done = 0
@@ -78,10 +78,10 @@ const CollectScreen = ({
       let notImportNotUrgent = 0
       taskRes.forEach(trItem => {
         // 任务统计
-        if (trItem.status === 1) {
-          expired++
-        } else if (trItem.status === 2) {
+        if (trItem.finished) {
           done++
+        } else {
+          expired++
         }
         // 四象限
         if (trItem.taskType === 1) {
@@ -118,26 +118,30 @@ const CollectScreen = ({
     if (taskRecordRes && taskRecordRes.length > 0) {
       let now = dayjs()
       let weekData = [0, 0, 0, 0, 0, 0, 0]
-      taskRecordRes.forEach(trItem => {
-        weekData = weekData.map((wdItem, wdIndex) => {
-          let count = 0
-          const date = now.day(wdIndex - 6)
-          const startTime = date.hour(0).minute(0).second(0)
-          const endTime = date.hour(23).minute(59).second(59)
+      weekData = weekData.map((wdItem, wdIndex) => {
+        let count = 0
+        const date = now.day(wdIndex + 1)
+        const startTime = date.hour(0).minute(0).second(0)
+        const endTime = date.hour(23).minute(59).second(59)
+        let taskIds = []
+        taskRecordRes.forEach(trItem => {
           if (
             (
-              dayjs(trItem.startTime).isSameOrAfter(startTime) &&
-              dayjs(trItem.startTime).isBefore(endTime)
-            ) ||
-            (
-              dayjs(trItem.endTime).isSameOrAfter(startTime) &&
-              dayjs(trItem.endTime).isBefore(endTime)
-            )
+              (
+                dayjs(trItem.startTime).isSameOrAfter(startTime) &&
+                dayjs(trItem.startTime).isBefore(endTime)
+              ) ||
+              (
+                dayjs(trItem.endTime).isSameOrAfter(startTime) &&
+                dayjs(trItem.endTime).isBefore(endTime)
+              )
+            ) && !taskIds.includes(trItem.taskId)
           ) {
+            taskIds.push(trItem.taskId)
             count++
           }
-          return count
         })
+        return count
       })
       setWeekLineData({
         dataSets: [

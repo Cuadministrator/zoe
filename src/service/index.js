@@ -52,6 +52,7 @@ export default async function request (
         success = true
       }
       console.warn(url, data)
+      console.warn(options.data)
       return Promise.resolve({
         success: success,
         message: message,
