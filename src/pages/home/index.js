@@ -12,6 +12,9 @@ import { ModalEdit, Icon } from '../../components'
 // storage
 import { restoreTask, editTask, completeTask, deleteTask, addTask, getTodayTaskList } from '../../storage/task'
 
+// api
+import { resetTask } from '../../service/task'
+
 const HomeScreen = ({navigation, globalStore}) => {
   const safeArea = useSafeArea()
   // 列表数据
@@ -63,10 +66,11 @@ const HomeScreen = ({navigation, globalStore}) => {
   const _onItemComplete = async (id, index, finished) => {
     let res = null
     if (finished) {
-      res = await restoreTask({id})
+      // res = await restoreTask({id})
+      await resetTask(id)
     } else {
       const taskIdList = [id]
-      const timeList = [{startTime: dayjs(), endTime: dayjs()}]
+      const timeList = [{startTime: dayjs().format('YYYY-MM-DD HH:mm:ss'), endTime: dayjs().format('YYYY-MM-DD HH:mm:ss')}]
       res = await completeTask({taskIdList, timeList})
     }
     initData()

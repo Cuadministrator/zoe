@@ -6,6 +6,9 @@ import storage from '../storage'
 // components
 import { Tip } from 'beeshell'
 
+// api
+import { getUsers } from '../service/user'
+
 class Global {
   @observable user = null
   
@@ -23,9 +26,10 @@ class Global {
 
   @action
   async login ({ account, password }) {
-    const usersRes = await storage.get('userList')
-    if (usersRes && usersRes.length > 0) {
-      const user = usersRes.find(item => item.phone === account && item.password === password)
+    // const usersRes = await storage.get('userList')
+    const usersRes = await getUsers()
+    if (usersRes && usersRes.data && usersRes.data.length > 0) {
+      const user = usersRes.data.find(item => item.phone === account && item.password === password)
       if (user) {
         runInAction(() => {
           this.user = user
