@@ -38,7 +38,7 @@ const HomeScreen = ({navigation, globalStore}) => {
       params.userId = globalStore.user.id
     }
     const res = await getTodayTaskList(params)
-    if (res && res.length > 0) {
+    if (res && Object.prototype.toString.call(res) === '[object Array]') {
       setData(res)
     }
   }

@@ -6,7 +6,8 @@ import {
   getAllTaskRecord,
   addTaskItem,
   addTaskRecord,
-  updateTask
+  updateTask,
+  searchTaskById
 } from '../service/task'
 
 
@@ -44,7 +45,7 @@ export const getTodayTaskList = async ({userId = null}) => {
   if (taskRes && taskRes.data && taskRes.data.length > 0) {
     taskRes.data.forEach((taskItem, taskIndex) => {
       // 过滤失效项 非用户项
-      if (taskItem.status === 3 || taskItem.userId !== userId) return
+      if (taskItem.status === 3 || taskItem.userId !== userId) return console.warn('del', taskItem)
       taskRes.data[taskIndex].label = taskRes.data[taskIndex].name
       // 处理 finished 判断任务是否已经完成
       if (taskItem.repeatType === 1) {
@@ -91,7 +92,7 @@ export const getTodayTaskList = async ({userId = null}) => {
         const create = dayjs(formatTime(dateTime))
         if (
           !checkDecimal(
-            create.diff(now, 'month', true)
+            now.diff(create, 'month', true)
           )
         ) {
           result.push(taskItem)
@@ -101,7 +102,7 @@ export const getTodayTaskList = async ({userId = null}) => {
         const create = dayjs(formatTime(dateTime))
         if (
           !checkDecimal(
-            create.diff(now, 'year', true)
+            now.diff(create, 'year', true)
           )
         ) {
           result.push(taskItem)
@@ -122,6 +123,7 @@ export const getTaskRecordList = async({userId}) => {
     taskRes && taskRes.length > 0 &&
     taskRecordRes && taskRecordRes.data && taskRecordRes.data.length > 0
   ) {
+    let taskIds = []
     taskRecordRes.data.forEach(trItem => {
       const taskItem = taskRes.find(tItem => tItem.id === trItem.taskId)
       if (taskItem) {
@@ -182,7 +184,6 @@ export const editTask = async ({id, ...resetProps}) => {
     }
     // 数据存储
     // await storage.save(STORAGE_KEY, taskRes)
-    console.warn(taskRes.data[taskIndex])
     // tags
     taskRes.data[taskIndex].tags = taskRes.data[taskIndex].tags.join('-')
     await updateTask(taskRes.data[taskIndex])
@@ -192,7 +193,6 @@ export const editTask = async ({id, ...resetProps}) => {
 }
 
 export const completeTask = async ({taskIdList, timeList}) => {
-  console.warn(timeList, taskIdList)
   const res = await addTaskRecord(timeList, taskIdList)
   return res
 }
@@ -269,17 +269,23 @@ export const restoreTask = async({id}) => {
 }
 
 export const deleteTask = async ({id}) => {
-  const taskRes = await storage.get(STORAGE_KEY)
-  if (taskRes && taskRes.length > 0) {
-    let taskIndex = taskRes.findIndex(taskItem => taskItem.id === id)
-    if (taskIndex >= 0) {
-      taskRes[taskIndex] = {
-        ...taskRes[taskIndex],
-        status: 3
-      }
-      await storage.save(STORAGE_KEY, taskRes)
-      return true
-    }
+  // const taskRes = await storage.get(STORAGE_KEY)
+  // if (taskRes && taskRes.length > 0) {
+  //   let taskIndex = taskRes.findIndex(taskItem => taskItem.id === id)
+  //   if (taskIndex >= 0) {
+  //     taskRes[taskIndex] = {
+  //       ...taskRes[taskIndex],
+  //       status: 3
+  //     }
+  //     await storage.save(STORAGE_KEY, taskRes)
+  //     return true
+  //   }
+  // }
+  // return false
+  const taskRes = await searchTaskById(id)
+  if (taskRes && taskRes.success && taskRes.data && taskRes.data.length > 0) {
+    const taskItem = taskRes.data[0]
+    const res = await updateTask({...taskItem, status: 3} )
+    return res
   }
-  return false
 }

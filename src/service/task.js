@@ -61,3 +61,11 @@ export const updateTask = ({id, userId, name, taskType, dateTime, repeatType, ta
     }
   }
 })
+
+export const searchTaskById = (id) => request({
+  url: 'jobs/search',
+  method: 'GET',
+  params: {
+    id
+  }
+})
