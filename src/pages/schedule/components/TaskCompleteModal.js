@@ -15,7 +15,7 @@ import { Icon } from '../../../components'
 // utils
 import { checkDecimal } from '../../../utils/func'
 import dayjs from 'dayjs'
-import { getTaskList } from '../../../storage/task'
+import { getTaskList, getTaskRecordList } from '../../../storage/task'
 
 const screenHeight = Dimensions.get('window').height
 const screenWidth = Dimensions.get('window').width
@@ -53,12 +53,27 @@ const TaskCompleteModal = ({
 
   const initData = async () => {
     const taskRes = await getTaskList({userId})
+    const taskRecordRes = await getTaskRecordList({userId})
+    const formatTime = value => dayjs(value).format('YYYY-MM-DD 00:00:00')
     if (taskRes && taskRes.length > 0) {
       let result = []
       taskRes.forEach(taskItem => {
         const dateTime = taskItem.dateTime
         // 去除 过期任务
         if (taskItem.status === 3 || taskItem.status === 2) return
+        // 处理 finished 判断任务是否已经完成
+        if (
+          taskRecordRes &&
+          taskRecordRes.length > 0
+        ) {
+          const taskRecordResIndex = taskRecordRes.findIndex(
+            trItem => (
+              trItem.taskId === taskItem.id &&
+              formatTime(trItem.startTime) === formatTime(dayjs())
+            )
+          )
+          if (taskRecordResIndex >= 0) return
+        }
         if (taskItem.repeatType === 1) { // 不重复任务
           if (
             formatDate(dateTime) === formatDate(dayjs())
@@ -74,8 +89,8 @@ const TaskCompleteModal = ({
             result.push(taskItem)
           }
         } else if (taskItem.repeatType === 4) { // 每月重复任务
-          const now = initDate(dayjs())
-          const create = initDate(dateTime)
+          const now = dayjs()
+          const create = dayjs(dateTime)
           if (
             checkDecimal(
               now.diff(create, 'month', true)

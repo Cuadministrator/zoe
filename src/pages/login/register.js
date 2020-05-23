@@ -16,6 +16,9 @@ import { inject, observer } from 'mobx-react'
 import { Input, Button, Tip } from 'beeshell'
 import { Icon } from '../../components'
 
+// api
+import { addUser } from '../../service/user'
+
 // utils
 import { getStatusBarHeight } from '../../utils/func'
 import { register } from '../../storage/user'
@@ -96,7 +99,8 @@ class RegisterPage extends Component {
       phone: account,
       password: psw,
       name,
-      email
+      email,
+      pic: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1588018407177&di=be2dc0bac343d615225a174d91e3650b&imgtype=0&src=http%3A%2F%2Fis1.mzstatic.com%2Fimage%2Fthumb%2FPurple122%2Fv4%2Faf%2Fb4%2F25%2Fafb425c6-6dc9-e263-c588-6a07c9c3e791%2Fsource%2F512x512bb.png'
     })
     if (res) {
       navigation.reset({

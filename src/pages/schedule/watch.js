@@ -17,6 +17,8 @@ import { addTask, completeTask } from '../../storage/task'
 const ITEM_HEIGHT = 50
 const ITEMS_HEIGHT = 150
 
+const formatTime = value => dayjs(value).format('YYYY-MM-DD HH:mm:ss')
+
 const ScheduleWatch = ({
   route,
   navigation,
@@ -91,7 +93,8 @@ const ScheduleWatch = ({
     // 刷新上一个页面
     const { refresh } = route.params
     const taskIdList = taskList.map(taskItem => taskItem.id)
-    const res = await completeTask({taskIdList, timeList})
+    const timeListFormat = timeList.map(tItem => ({startTime: formatTime(tItem.start), endTime: formatTime(tItem.end)}))
+    const res = await completeTask({taskIdList, timeList: timeListFormat})
     if (res) {
       // 重置时间表
       resetStopwatch()
