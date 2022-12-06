@@ -25,7 +25,7 @@
     "dayjs": "^1.8.24",
     "mobx": "^5.15.4",
     "mobx-react": "^6.1.8",
-    "qs": "6.9.0",
+    "qs": "6.9.7",
     "react": "16.9.0",
     "react-native": "0.61.3",
     "react-native-calendars": "https://github.com/Cuadministrator/react-native-calendars.git#v1.20.1",
